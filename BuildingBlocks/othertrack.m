@@ -29,7 +29,7 @@ ifi = Screen('GetFlipInterval', window);
 [xCenter, yCenter] = RectCenter(windowRect);
 
 % Make a base Rect of 200 by 200 pixels
-baseRect = [0 0 200 200];
+baseRect = [0 0 100 300];
 
 % Define red
 red = [1 0 0];
@@ -62,6 +62,7 @@ while ~KbCheck
 
     % Get the current position of the mouse
     [mx, my, buttons] = GetMouse(window);
+    theta = atan(my/mx)
 
     % Find the central position of the square
     [cx, cy] = RectCenter(centeredRect);
@@ -84,20 +85,6 @@ while ~KbCheck
     if inside == 1 && sum(buttons) > 0
         sx = mx - dx;
         sy = my - dy;
-        
-        % Get the current squares position ans rotation angle
-        posX = posXs(i);
-        posY = posYs(i);
-        angle = angles(i);
-
-        % Translate, rotate, re-tranlate and then draw our square
-        Screen('glPushMatrix', window)
-        Screen('glTranslate', window, posX, posY)
-        Screen('glRotate', window, angle, 0, 0);
-        Screen('glTranslate', window, -posX, -posY)
-        Screen('FillRect', window, colors(i,:),...
-            CenterRectOnPoint(baseRect, posX, posY));
-        Screen('glPopMatrix', window)
     end
 
     % Center the rectangle on its new screen position
