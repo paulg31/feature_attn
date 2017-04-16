@@ -8,11 +8,9 @@ switch type
         ypos = 0.4;
     
     case 1  % Counter-Clockwise
-        text = 'Which target is closest to the vertical orientation?';
+        text = 'Orientation Discrimination';
         % text = [text '\n\n\n Which target is farther counter-clockwise?'];
-        text = [text '\n\n\n\n\n Press A if Left Target'];
-        text = [text '        Press L if Right Target'];
-        text = [text '\n\n\n\n\n Press SPACE for Wager'];
+        text = [text '\n\n\n\n\n Match the bar to the orientation of the stimulus'];
         ypos = 0.25;
         
     case 2  % Left/right
