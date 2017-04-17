@@ -35,6 +35,7 @@ Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
 % For help see: help RectCenter
 [xCenter, yCenter] = RectCenter(windowRect);
 
+
 % Draw text in the middle of the screen. We just to this so that we can get
 % the text bounds. These are the "dimensions" of the text as it would be
 % drawn to the screen
