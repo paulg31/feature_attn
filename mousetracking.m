@@ -29,49 +29,48 @@ ifi = Screen('GetFlipInterval', window);
 [xCenter, yCenter] = RectCenter(windowRect);
 
 % Make a base Rect of 200 by 200 pixels
-baseRect = [0 0 100 300];
+baseRect = [0 0 10 300];
 
 % Define red
 red = [1 0 0];
 
-texturerect = ones(100,300).*white;
+texturerect = ones(10,300).*white;
 recttexture = Screen('MakeTexture',window,texturerect);
-% % Here we set the initial position of the mouse to be in the centre of the
-% % screen
-% SetMouse(xCenter, yCenter, window);
-% 
-% % We now set the squares initial position to the centre of the screen
-% posX = xCenter;
-% posY = yCenter;
-% centeredRect = CenterRectOnPointd(baseRect, posX, posY);
 
-% % Sync us and get a time stampZ
- vbl = Screen('Flip', window);
- waitframes = 1;
-% 
+% Sync us and get a time stampZ
+vbl = Screen('Flip', window);
+waitframes = 1;
+ 
 % Maximum priority level
 topPriorityLevel = MaxPriority(window);
 Priority(topPriorityLevel);
-currentangle = 65;
+currentAngle = 65;
 degPerFrame = 1;
-% 
-% % Here we set the initial position of the mouse to be in the centre of the
-% % screen
-% SetMouse(xCenter, yCenter, window);
-% 
-% % Draw the rect to the screen
-%Screen('FillRect', window, red, centeredRect);
-Screen('DrawTexture', window, recttexture, [], [], currentAngle);
+% Here we set the initial position of the mouse to be in the centre of the
+% screen
+SetMouse(xCenter, yCenter, window);
 
-%         
-        % Flip to the screen
-        vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);
-%         
-%         
-%         angle = angle;
-% end
+while ~KbCheck
+    
+    % Get the current position of the mouse
+    [mx, my, buttons] = GetMouse(window);
+    currentX = mx-xCenter;
+    currentY = my-yCenter;
+    shift = atan(currentY/currentX);
+    degrees = 180/pi*shift;
+    
+    Screen('DrawTexture', window, recttexture, [], [], currentAngle);
 
+    % Flip to the screen
+    vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);
+    
+    if sum(buttons) > 0
+        currentAngle = currentAngle + degrees/10;
+    else
+        currentAngle = currentAngle;
+    end
+    
+end
 
-KbWait;
 sca;
 clearvars;
