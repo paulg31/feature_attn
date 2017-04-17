@@ -56,7 +56,7 @@ waitframes = 1;
 % Maximum priority level
 topPriorityLevel = MaxPriority(window);
 Priority(topPriorityLevel);
-angle = 90;
+angle = 65;
 degPerFrame = 1;
 
 % Here we set the initial position of the mouse to be in the centre of the
@@ -66,50 +66,51 @@ SetMouse(xCenter, yCenter, window);
 % Draw the rect to the screen
 Screen('FillRect', window, red, centeredRect);
 
-%Rotate
-while ~KbCheck
-    
-        % Get the current position of the mouse
-        [mx, my, buttons] = GetMouse(window);
-        mouse_theta = atan(my/mx)
-    
-        % Find the central position of the square
-        [cx, cy] = RectCenter(centeredRect);
-    
-        % See if the mouse cursor is inside the square
-        inside = IsInRect(mx, my, centeredRect);
-        
-        if inside == 1 && sum(buttons) > 0 && offsetSet == 0
-            dx = mx - cx;
-            dy = my - cy;
-            
-            angle = angle + mouse_theta;
-        end
-    
-        if inside == 1 && sum(buttons) > 0
-            PosX = mx - dx;
-            PosY = my - dy;
-        end
-        
-
-        % Get the current squares position ans rotation angle
-       %angle = angles;
-
-        % Translate, rotate, re-tranlate and then draw our square
-        Screen('glPushMatrix', window)
-        Screen('glTranslate', window, posX, posY)
-        Screen('glRotate', window, angle, 0, 0);
-        Screen('glTranslate', window, -posX, -posY)
-        Screen('FillRect', window, red,...
-            CenterRectOnPointd(baseRect, posX, posY));
-        Screen('glPopMatrix', window)
-        
+% %Rotate
+% while ~KbCheck
+%     
+%         % Get the current position of the mouse
+%         [mx, my, buttons] = GetMouse(window);
+%         mouse_theta = atan(my/mx);
+%     
+%         % Find the central position of the square
+%         [posX, posY] = RectCenter(centeredRect);
+%     
+%         % See if the mouse cursor is inside the square
+%         inside = IsInRect(mx, my, centeredRect);
+%         
+%         if inside == 1 && sum(buttons) > 0 && offsetSet == 0
+%             dx = mx - posX;
+%             dy = my - posY;
+%             angle = angle + mouse_theta;
+%             centeredRect = CenterRectOnPointd(baseRect, posX, posY);
+%         end
+% %     
+% %         if inside == 1 && sum(buttons) > 0
+% %             PosX = mx - dx;
+% %             PosY = my - dy;
+% %             
+% %         end
+%         
+% 
+%         % Get the current squares position ans rotation angle
+%        %angle = angles;
+% 
+%         % Translate, rotate, re-tranlate and then draw our square
+%         Screen('glPushMatrix', window)
+%         Screen('glTranslate', window, posX, posY)
+%         Screen('glRotate', window, angle, 0, 0);
+%         Screen('glTranslate', window, -posX, -posY)
+%         Screen('FillRect', window, red,...
+%             CenterRectOnPointd(baseRect, posX, posY));
+%         Screen('glPopMatrix', window)
+%         
         % Flip to the screen
         vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);
-        
-
-        angle = angle;
-end
+%         
+%         
+%         angle = angle;
+% end
 
 
 KbWait;
