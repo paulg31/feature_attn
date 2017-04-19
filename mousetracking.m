@@ -1,5 +1,4 @@
 function mousetracking(screen)% Clear the workspace and the screen
-WaitSecs(3);
 texturerect = ones(10,300).*screen.white;
 recttexture = Screen('MakeTexture',screen.window,texturerect);
 
@@ -16,6 +15,6 @@ while ~KbCheck
     degrees = 180/pi*shift;
     currentAngle = degrees;
     Screen('DrawTexture', screen.window, recttexture, [], [], currentAngle);
-    Screen('Flip', screen.window);
+    Screen('Flip', screen.window,screen.ifi);
 end
 end

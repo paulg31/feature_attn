@@ -2,7 +2,7 @@ function stimulus(screen)
 %--------------------
 % Gabor information
 %--------------------
-
+RestrictKeysForKbCheck(32)
 % Dimensions
 gaborDimPix = 55;
 
@@ -59,7 +59,7 @@ end
 baseRectout = [0 0 gaborDimPix gaborDimPix];
 allRectsout = nan(4, nGaborsout);
 for i = 1:nGaborsout
-    allRectsout(:, i) = CenterRectOnPointd(baseRect, xPosout(i), yPosout(i));
+    allRectsout(:, i) = CenterRectOnPointd(baseRectout, xPosout(i), yPosout(i));
 end
 
 % Randomise the Gabor orientations 

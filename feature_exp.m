@@ -2,7 +2,7 @@ function feature_exp
 PsychDefaultSetup(2);
 Screen('Preference', 'SkipSyncTests', 2);
 screenNumber = max(Screen('Screens'));
-%Screen and display info
+%Screen and display info   
 screen.width         = 19.7042; %iPad screen width in cm
 screen.distance      = 32; % Screen distance in cm
 screen.angle         = 2*(180/pi)*(atan((screen.width/2) / screen.distance)) ; % total visual angle of screen in degrees
@@ -37,12 +37,14 @@ screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
 
 showinstructions(0,screen);
+WaitSecs(.5);
 
 stimulus(screen);
-
+WaitSecs(.5);
 showinstructions(1,screen);
-
+WaitSecs(.5);
 mousetracking(screen) ;
+WaitSecs(.5);
 
 sca;
 end
