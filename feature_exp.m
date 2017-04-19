@@ -1,4 +1,6 @@
 function feature_exp
+PsychDefaultSetup(2);
+Screen('Preference', 'SkipSyncTests', 2);
 screenNumber = max(Screen('Screens'));
 %Screen and display info
 screen.width         = 19.7042; %iPad screen width in cm
@@ -6,6 +8,7 @@ screen.distance      = 32; % Screen distance in cm
 screen.angle         = 2*(180/pi)*(atan((screen.width/2) / screen.distance)) ; % total visual angle of screen in degrees
 screen.text_size     = 36;
 screen.white         = WhiteIndex(screenNumber);
+screen.black         = BlackIndex(screenNumber);
 screen.bgcolor       = screen.white / 2;
 screen.darkgray      = 10/255;
 screen.fixationdur   = 0.5;
@@ -32,7 +35,14 @@ screen.stimwidthmultiplier = 1.5352;
 % IFI and Screen Info
 screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
+
 showinstructions(0,screen);
+
+stimulus(screen);
+
 showinstructions(1,screen);
+
+mousetracking(screen) ;
+
 sca;
 end
