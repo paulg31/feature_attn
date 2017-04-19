@@ -51,7 +51,6 @@ degPerFrame = 1;
 SetMouse(xCenter, yCenter/2, window);
 
 while ~KbCheck
-
     % Get the current position of the mouse
     [mx, my, buttons] = GetMouse(window);
     currentX = mx-xCenter;

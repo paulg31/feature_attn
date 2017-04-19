@@ -67,26 +67,47 @@ dim = 8;
 % of the array
 dist = sqrt(x.^2 + y.^2);
 
-% Cut out an inner annulus
-innerDist = 2;
-x(dist <= innerDist) = nan;
-y(dist <= innerDist) = nan;
+% % Cut out an inner annulus
+% innerDist = 0;
+% x(dist <= innerDist) = nan;
+% y(dist <= innerDist) = nan;
+% 
+% % Cut out an outer annulus
+% outerDist = 5;
+% x(dist >= outerDist) = nan;
+% y(dist >= outerDist) = nan;
+% 
+% % Select only the finite values
+% x = x(isfinite(x));
+% y = y(isfinite(y));
+count = 1; step = pi/6; mean = 65; std = 15;
+for val = 0:step:2*pi-step
+    jitterx = randn*std + mean;
+    jittery = randn*std + mean;
+    xval = (jitterx+100)*cos(val);
+    yval = (jittery+100)*sin(val);
+    xPos(count) = xCenter+xval;
+    yPos(count) = yCenter+yval;
+    count = count+1;
+end
 
-% Cut out an outer annulus
-outerDist = 5;
-x(dist >= outerDist) = nan;
-y(dist >= outerDist) = nan;
-
-% Select only the finite values
-x = x(isfinite(x));
-y = y(isfinite(y));
-
-% Center the annulus coordinates in the centre of the screen
-xPos = x .* gaborDimPix + xCenter;
-yPos = y .* gaborDimPix + yCenter;
+count = 1; step = pi/4; mean = 45; std = 15;
+for val = 0:step:2*pi-step
+    jitterx = randn*std + mean;
+    jittery = randn*std + mean;
+    xval = (jitterx+50)*cos(val);
+    yval = (jittery+50)*sin(val);
+    xPosout(count) = xCenter+xval;
+    yPosout(count) = yCenter+yval;
+    count = count+1;
+end
+% % Center the annulus coordinates in the centre of the screen
+% xPos = x .* gaborDimPix + xCenter;
+% yPos = y .* gaborDimPix + yCenter;
 
 % Count how many Gabors there are
 nGabors = numel(xPos);
+nGaborsout = numel(xPosout);
 
 % Make the destination rectangles for all the Gabors in the array
 baseRect = [0 0 gaborDimPix gaborDimPix];
@@ -95,21 +116,29 @@ for i = 1:nGabors
     allRects(:, i) = CenterRectOnPointd(baseRect, xPos(i), yPos(i));
 end
 
-% Randomise the Gabor orientations and determine the drift speeds of each gabor.
-% This is given by multiplying the global motion speed by the cosine
-% difference between the global motion direction and the global motion.
-% Here the global motion direction is 0. So it is just the cosine of the
-% angle we use. We re-orientate the array when drawing
+% Make the destination rectangles for all the Gabors in the array
+baseRectout = [0 0 gaborDimPix gaborDimPix];
+allRectsout = nan(4, nGaborsout);
+for i = 1:nGaborsout
+    allRectsout(:, i) = CenterRectOnPointd(baseRect, xPosout(i), yPosout(i));
+end
+
+% Randomise the Gabor orientations 
 gaborAngles = rand(1, nGabors) .* 180 - 90;
+gaborAnglesout = rand(1, nGaborsout) .* 180 - 90;
 
 % Randomise the phase of the Gabors and make a properties matrix. We could
 % if we want have each Gabor with different properties in all dimensions.
 % Not just orientation and drift rate as we are doing here.
 % This is the power of using procedural textures
 phaseLine = rand(1, nGabors) .* 360;
+phaseLineout = rand(1,nGaborsout).*360;
 propertiesMat = repmat([NaN, freq, sigma, contrast, aspectRatio, 0, 0, 0],...
     nGabors, 1);
 propertiesMat(:, 1) = phaseLine';
+propertiesMatout = repmat([NaN, freq, sigma, contrast, aspectRatio, 0, 0, 0],...
+    nGaborsout, 1);
+propertiesMatout(:,1) = phaseLineout';
 
 % Perform initial flip to gray background and sync us to the retrace:
 vbl = Screen('Flip', window);
@@ -120,20 +149,18 @@ waitframes = 1;
 % Animation loop
 while ~KbCheck
 
-    % Set the right blend function for drawing the gabors
-    Screen('BlendFunction', window, 'GL_ONE', 'GL_ZERO');
-
     % Batch draw all of the Gabors to screen
     Screen('DrawTextures', window, gabortex, [], allRects, gaborAngles - 90,...
         [], [], [], [], kPsychDontDoRotation, propertiesMat');
-
-    % Change the blend function to draw an antialiased fixation point
-    % in the centre of the array
-    Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
+    
+    % Batch draw all of the Gabors to screen
+    Screen('DrawTextures', window, gabortex, [], allRectsout, gaborAnglesout - 90,...
+        [], [], [], [], kPsychDontDoRotation, propertiesMatout');
+    
+    
 
     % Draw the fixation point
-    Screen('DrawDots', window, [xCenter; yCenter], 10, black, [], 2);
-
+    Screen('DrawDots', window, [xCenter; yCenter], 5, black, [], 2);
 
     % Flip our drawing to the screen
     vbl = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);
