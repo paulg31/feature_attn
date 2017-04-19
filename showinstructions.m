@@ -14,20 +14,15 @@ switch type
         ypos = 0.25;
         
     case 2  % Left/right
-        text = 'Left/Right Task';
-        text = [text '\n\n\n Press Z if Left'];
-        text = [text '\n\n\n Press M if Right'];
-        ypos = 0.25;
+        text = 'Pre-Cue';
         
     case 3  % Reliability discrimination
-        switch screen.stimulusType
-            case 'gabor'
-                text = 'Contrast Task';
-                text = [text '\n\n\n Press Q if 1st target has higher contrast'];
-                text = [text '\n\n\n Press P if 2nd target has higher contrast'];
-                ypos = 0.25;                
-        end
-    case 4 %Break Time
+        text = 'Stimulus';
+        ypos = .4;
+    case 4
+        text = 'Post-Cue';
+        ypos = .4;
+    case 5 %Break Time
         text = 'Break time';
         ypos = .4;
         

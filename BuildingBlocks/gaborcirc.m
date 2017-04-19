@@ -5,7 +5,7 @@ sca;
 
 % Here we call some default settings for setting up Psychtoolbox
 PsychDefaultSetup(2);
-
+Screen('Preference', 'SkipSyncTests', 2);
 % Seed the random number generator. Here we use the an older way to be
 % compatible with older systems. Newer syntax would be rng('shuffle'). Look
 % at the help function of rand "help rand" for more information
@@ -95,17 +95,12 @@ for i = 1:nGabors
     allRects(:, i) = CenterRectOnPointd(baseRect, xPos(i), yPos(i));
 end
 
-% Drift speed for the 2D global motion
-degPerSec = 360 * 4;
-degPerFrame =  degPerSec * ifi;
-
 % Randomise the Gabor orientations and determine the drift speeds of each gabor.
 % This is given by multiplying the global motion speed by the cosine
 % difference between the global motion direction and the global motion.
 % Here the global motion direction is 0. So it is just the cosine of the
 % angle we use. We re-orientate the array when drawing
 gaborAngles = rand(1, nGabors) .* 180 - 90;
-degPerFrameGabors = cosd(gaborAngles) .* degPerFrame;
 
 % Randomise the phase of the Gabors and make a properties matrix. We could
 % if we want have each Gabor with different properties in all dimensions.
@@ -142,10 +137,6 @@ while ~KbCheck
 
     % Flip our drawing to the screen
     vbl = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);
-
-    % Increment the phase of our Gabors
-    phaseLine = phaseLine + degPerFrameGabors;
-    propertiesMat(:, 1) = phaseLine';
 
 end
 

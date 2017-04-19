@@ -44,7 +44,7 @@ waitframes = 1;
 % Maximum priority level
 topPriorityLevel = MaxPriority(window);
 Priority(topPriorityLevel);
-currentAngle = 0;
+currentAngle = 65;
 degPerFrame = 1;
 % Here we set the initial position of the mouse to be in the centre of the
 % screen
