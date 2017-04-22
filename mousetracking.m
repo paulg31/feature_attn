@@ -4,7 +4,7 @@ recttexture = Screen('MakeTexture',screen.window,texturerect);
 
 % Here we set the initial position of the mouse to be in the centre of the
 % screen
-SetMouse(screen.xCenter, screen.yCenter/2, screen.window);
+SetMouse(screen.xCenter, screen.yCenter+.01, screen.window);
 
 while ~KbCheck
     % Get the current position of the mouse

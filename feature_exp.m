@@ -18,7 +18,7 @@ screen.feedback_time = 1.1;
 screen.sound_volume  = 2;
 screen.jitter        = 0.1;  % 10% random jitter of durations
 screen.gabor_drift   = 0;    % Gabor drift speed (0=static)
-screen.stim_duration = .1; % Stimulus presentation time
+screen.stim_duration = .1; % Stimulus presentation time       
 
 % Correction to stimulus width/period since previously reported dva were off
 screen.stimwidthmultiplier = 1.5352;
@@ -32,14 +32,19 @@ screen.stimwidthmultiplier = 1.5352;
 % Centers
 [screen.xCenter, screen.yCenter] = RectCenter(screen.windowRect);
 
+% pixels per degree                        
+screen.pxPerDeg     = screen.windowRect(4) / screen.angle; 
+
 % IFI and Screen Info
 screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
 
 showinstructions(0,screen);
 WaitSecs(.5);
-
-stimulus(screen);
+gabor = stim_info(screen);
+stimulus(screen, gabor);
+WaitSecs(.5);
+drawarc( screen );
 WaitSecs(.5);
 showinstructions(1,screen);
 WaitSecs(.5);

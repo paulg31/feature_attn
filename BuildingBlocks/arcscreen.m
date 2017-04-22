@@ -36,16 +36,42 @@ startx = xCenter/2;
 starty = 0;
 endx = xCenter+xCenter/2;
 endy = xCenter;
-arcl = 120;
+arcl = 90;
 start = -45;
-for ii = 1:.1:3
-    Screen('DrawArc',window,white,[startx starty+75 endx endy],start,arcl)
-    starty = starty - ii;
-    endy = endy-ii;
-    arcl = arcl - 2*ii;
-    start = start + ii;
+radius = 340;
+
+% Draw some filled and framed polygons:
+polyCenterX=xCenter;
+polyCenterY=yCenter;
+numPoints=3000;
+polyRadius=50;
+count = 1;
+xval = zeros(1,37);
+yval = zeros(1,37);
+for angle  = pi/2:pi/72:pi
+    xval(count) = cos(angle)*radius +xCenter;
+    yval(count) = sin(angle)*radius +yCenter;
+    count = count +1;
 end
-    
+polyPoints2 = [xval',yval'];
+sigma = pi/15;
+cent = (pi/2 + pi)/2;
+newx = zeros(1,37);
+newy = zeros(1,37);
+count = 1;
+for val = pi/2:pi/72:pi
+    newy(count) = 10*normpdf(val,cent,sigma)+yval(count);
+    newx(count) = xval(count);
+    count = count+1;
+end
+
+newxval = [xval newx];
+newyval = [yval newy];
+newpolyPoints = [newxval',newyval'];
+% Draw a filled polygon:
+
+Screen('FillPoly', window, [0.5, 0.5, 1], newpolyPoints);
+Screen('FillPoly', window, black, polyPoints2);  
 
 % Draw a white dot where the mouse cursor is
 Screen('DrawDots', window, [xCenter yCenter], 10, white, [], 2);

@@ -1,27 +1,4 @@
-function stimulus(screen)
-%--------------------
-% Gabor information
-%--------------------
-RestrictKeysForKbCheck(32)
-% Dimensions
-gaborDimPix = 55;
-
-% Sigma of Gaussian
-sigma = gaborDimPix / 6;
-
-% Obvious Parameters
-orientation = 90;
-contrast = 0.5;
-aspectRatio = 1.0;
-
-% Spatial Frequency (Cycles Per Pixel)
-numCycles = 3;
-freq = numCycles / gaborDimPix;
-
-% Build a procedural gabor texture
-gabortex = CreateProceduralGabor(screen.window, gaborDimPix, gaborDimPix,...
-    [], [0.5 0.5 0.5 0.0], 1, 0.5);
-
+function stimulus(screen,gabor)
 
 count = 1; step = pi/6; mean = 65; std = 15;
 for val = 0:step:2*pi-step
@@ -49,14 +26,14 @@ nGabors = numel(xPos);
 nGaborsout = numel(xPosout);
 
 % Make the destination rectangles for all the Gabors in the array
-baseRect = [0 0 gaborDimPix gaborDimPix];
+baseRect = [0 0 gabor.grateAlphaMaskSize gabor.grateAlphaMaskSize];
 allRects = nan(4, nGabors);
 for i = 1:nGabors
     allRects(:, i) = CenterRectOnPointd(baseRect, xPos(i), yPos(i));
 end
 
 % Make the destination rectangles for all the Gabors in the array
-baseRectout = [0 0 gaborDimPix gaborDimPix];
+baseRectout = [0 0 gabor.grateAlphaMaskSize gabor.grateAlphaMaskSize];
 allRectsout = nan(4, nGaborsout);
 for i = 1:nGaborsout
     allRectsout(:, i) = CenterRectOnPointd(baseRectout, xPosout(i), yPosout(i));
@@ -66,16 +43,6 @@ end
 gaborAngles = rand(1, nGabors) .* 180 - 90;
 gaborAnglesout = rand(1, nGaborsout) .* 180 - 90;
 
-% Randomise the phase of the Gabors and make a properties matrix.
-phaseLine = rand(1, nGabors) .* 360;
-phaseLineout = rand(1,nGaborsout).*360;
-propertiesMat = repmat([NaN, freq, sigma, contrast, aspectRatio, 0, 0, 0],...
-    nGabors, 1);
-propertiesMat(:, 1) = phaseLine';
-propertiesMatout = repmat([NaN, freq, sigma, contrast, aspectRatio, 0, 0, 0],...
-    nGaborsout, 1);
-propertiesMatout(:,1) = phaseLineout';
-
 % Perform initial flip to gray background and sync us to the retrace:
 Screen('Flip', screen.window);
 
@@ -83,12 +50,12 @@ Screen('Flip', screen.window);
 while ~KbCheck
 
     % Batch draw all of the Gabors to screen
-    Screen('DrawTextures', screen.window, gabortex, [], allRects, gaborAngles - 90,...
-        [], [], [], [], kPsychDontDoRotation, propertiesMat');
+    Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles - 90,...
+        [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
     
-    % Batch draw all of the Gabors to screen
-    Screen('DrawTextures', screen.window, gabortex, [], allRectsout, gaborAnglesout - 90,...
-        [], [], [], [], kPsychDontDoRotation, propertiesMatout');
+%     % Batch draw all of the Gabors to screen
+%     Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout - 90,...
+%         [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
     % Draw the fixation point
     Screen('DrawDots', screen.window, [screen.xCenter; screen.yCenter], 5, screen.black, [], 2);
