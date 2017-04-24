@@ -10,7 +10,7 @@ PsychDefaultSetup(2);
 screens = Screen('Screens');
 
 % Draw to the external screen if avaliable
-screenNumber = max(screens);
+screenNumber = max(screens); 
 
 % Define black and white
 white = WhiteIndex(screenNumber);
@@ -32,19 +32,9 @@ ifi = Screen('GetFlipInterval', window);
 vbl = Screen('Flip', window);
 waitframes = 1;
 dur = 1;
-startx = xCenter/2;
-starty = 0;
-endx = xCenter+xCenter/2;
-endy = xCenter;
-arcl = 90;
-start = -45;
 radius = 340;
 
 % Draw some filled and framed polygons:
-polyCenterX=xCenter;
-polyCenterY=yCenter;
-numPoints=3000;
-polyRadius=50;
 count = 1;
 xval = zeros(1,37);
 yval = zeros(1,37);
@@ -53,7 +43,7 @@ for angle  = pi/2:pi/72:pi
     yval(count) = sin(angle)*radius +yCenter;
     count = count +1;
 end
-polyPoints2 = [xval',yval'];
+polyPoints2 = [xval',yval']; 
 sigma = pi/15;
 cent = (pi/2 + pi)/2;
 newx = zeros(1,37);

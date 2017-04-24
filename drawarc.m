@@ -1,37 +1,46 @@
-function drawarc( screen )
+function drawarc( screen,trial_mean )
 waitframes = 1;
-radius = 340;
+radius = 200;
+% trial_mean = -45;
+angle_mean = trial_mean*pi/180;
+anglestep = pi/72;
+anglestart = angle_mean - pi/4;
+angleend = angle_mean+pi/4;
 
-% Draw some filled and framed polygons:
+% Draw arc cover
 count = 1;
-xval = zeros(1,37);
-yval = zeros(1,37);
-for angle  = pi/4:pi/72:3*pi/4
+sapns = anglestart:anglestep:angleend;
+xval = zeros(1,numel(sapns));
+yval = zeros(1,numel(sapns));
+for angle  = anglestart:anglestep:angleend
     xval(count) = cos(angle)*radius +screen.xCenter;
     yval(count) = sin(angle)*radius +screen.yCenter;
     count = count +1;
 end
 polyPoints2 = [xval',yval'];
-sigma = pi/15;
-cent = pi/2;
-newx = zeros(1,37);
-newy = zeros(1,37);
+
+% Draw pdf for arc
+cent = angle_mean;
+sigma = cent/3;
+if sigma < 0
+    sigma = -sigma;
+end
+
+newx = zeros(1,numel(sapns));
+newy = zeros(1,numel(sapns));
 count = 1;
-for val = pi/4:pi/72:3*pi/4
-    newy(count) = 10*normpdf(val,cent,sigma)+yval(count);
+for val = anglestart:anglestep:angleend
+    newy(count) = -10*normpdf(val,cent,sigma)+yval(count);
     newx(count) = xval(count);
     count = count+1;
 end
+newpolyPoints = [newx',newy'];
 
-newxval = [xval newx];
-newyval = [yval newy];
-newpolyPoints = [newxval',newyval'];
-% Draw a filled polygon:
-
+% Draw pdf then cover
 Screen('FillPoly', screen.window, screen.white, newpolyPoints);
 Screen('FillPoly', screen.window, screen.bgcolor, polyPoints2);  
 
-% Draw a white dot where the mouse cursor is
+% Draw a white dot(fixation)
 Screen('DrawDots', screen.window, [screen.xCenter screen.yCenter], 10, screen.white, [], 2);
 
 % Flip to the screen

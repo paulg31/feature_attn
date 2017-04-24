@@ -39,17 +39,8 @@ screen.pxPerDeg     = screen.windowRect(4) / screen.angle;
 screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
 
-showinstructions(0,screen);
-WaitSecs(.5);
-gabor = stim_info(screen);
-stimulus(screen, gabor);
-WaitSecs(.5);
-drawarc( screen );
-WaitSecs(.5);
-showinstructions(1,screen);
-WaitSecs(.5);
-mousetracking(screen) ;
-WaitSecs(.5);
+trial_mean = -45;
+runtrial(screen,trial_mean)
 
 sca;
 end
