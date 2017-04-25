@@ -1,10 +1,10 @@
 function stimulus(screen,gabor,trial_mean)
 contrast = .5;
 trial_dev = 5;
-stimdevmean = 10;
+stimdevmean = 7.5;
 stimdevdev = 2;
 step = pi/4;
-std = 15;
+std = 11.5;
 meanfirst = 65;
 meansecond = 45;
 
@@ -60,6 +60,7 @@ for ii = 1:nGaborsout
     stimdev = randn(1)*stimdevmean + stimdevdev;
     gaborAnglesout(ii) = gabmean + stimdev
 end
+
 % Contrast
 gabor.propertiesMat(4) = contrast;
 
@@ -69,7 +70,9 @@ Screen('Flip', screen.window);
 
 % Animation loop
 while ~KbCheck
-
+    
+    %Screen('BlendFunction', screen.window, 'GL_ONE', 'GL_ZERO');
+    
     % Batch draw all of the Gabors to screen
     Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles,...
         [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');

@@ -1,4 +1,4 @@
-function feature_exp
+clearvars;
 PsychDefaultSetup(2);
 Screen('Preference', 'SkipSyncTests', 2);
 screenNumber = max(Screen('Screens'));
@@ -28,7 +28,7 @@ screen.stimwidthmultiplier = 1.5352;
                             [], 32, 2,[], [],  kPsychNeed32BPCFloat);
 % Get the size of the on screen window in pixels
 [~, screen.Ypixels] = Screen('WindowSize', screen.window);
-
+trial_mean = 45;
 % Centers
 [screen.xCenter, screen.yCenter] = RectCenter(screen.windowRect);
 
@@ -38,9 +38,24 @@ screen.pxPerDeg     = screen.windowRect(4) / screen.angle;
 % IFI and Screen Info
 screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
+texturerect = ones(10,300).*screen.white;
+recttexture = Screen('MakeTexture',screen.window,texturerect);
 
-trial_mean = 23;
-runtrial(screen,trial_mean)
+% Here we set the initial position of the mouse to be in the centre of the
+% screen
+% xstart = rand(1)*screen.xCenter;
+% ystart = rand(1)*screen.yCenter;
+SetMouse(screen.xCenter,screen.yCenter,screen.window);
+
+secs0 = GetSecs;
+while ~KbCheck
+    % Get the current position of the mouse
+    [mx, ~, ~] = GetMouse(screen.window);
+    Xdiff = screen.xCenter-mx;
+    L = screen.xCenter/2;
+    theta = mod(Xdiff/L,1)*pi
+    Screen('DrawTexture', screen.window, recttexture, [], [], theta*180/pi);
+    Screen('Flip', screen.window,screen.ifi);
+end
 
 sca;
-end
