@@ -26,9 +26,11 @@ screen.stimwidthmultiplier = 1.5352;
 % Open the screen
 [screen.window, screen.windowRect] = PsychImaging('OpenWindow', screenNumber, screen.bgcolor,...
                             [], 32, 2,[], [],  kPsychNeed32BPCFloat);
+                        
 % Get the size of the on screen window in pixels
 [~, screen.Ypixels] = Screen('WindowSize', screen.window);
 trial_mean = 45;
+
 % Centers
 [screen.xCenter, screen.yCenter] = RectCenter(screen.windowRect);
 
@@ -41,19 +43,25 @@ Screen('TextFont', screen.window, 'Times New Roman');
 texturerect = ones(10,300).*screen.white;
 recttexture = Screen('MakeTexture',screen.window,texturerect);
 
-% Here we set the initial position of the mouse to be in the centre of the
-% screen
-% xstart = rand(1)*screen.xCenter;
-% ystart = rand(1)*screen.yCenter;
-SetMouse(screen.xCenter,screen.yCenter,screen.window);
+% Set Mouse
+xstart = rand(1)*screen.windowRect(3);
+ystart = rand(1)*screen.windowRect(4);
+SetMouse(xstart,ystart,screen.window);
 
 secs0 = GetSecs;
 while ~KbCheck
     % Get the current position of the mouse
     [mx, ~, ~] = GetMouse(screen.window);
+    if mx < 2
+        SetMouse(1598,screen.yCenter,screen.window);
+    elseif mx > 1598
+        SetMouse(2,screen.yCenter,screen.window);
+    end
     Xdiff = screen.xCenter-mx;
     L = screen.xCenter/2;
-    theta = mod(Xdiff/L,1)*pi
+    theta = mod(Xdiff/L,1)*pi;
+    actual = pi - theta;
+
     Screen('DrawTexture', screen.window, recttexture, [], [], theta*180/pi);
     Screen('Flip', screen.window,screen.ifi);
 end

@@ -1,19 +1,20 @@
 function stimulus(screen,gabor,trial_mean)
 contrast = .5;
-trial_dev = 5;
-stimdevmean = 7.5;
-stimdevdev = 2;
-step = pi/4;
-std = 11.5;
-meanfirst = 65;
+%trial_dev = 10;
+stimdevmean = 5.5;
+stimdevdev = 10;
+std = 7.5;
+meanfirst = 75;
 meansecond = 45;
+theta_shift = randn*pi/16 + pi/64; %SCRAP THIS, make x and y changes bigger, or keep and get rid of x and y shifts....%
+step = pi/4;
 
 count = 1;
 for val = 0:step:2*pi-step
     jitterx = randn*std + meanfirst;
     jittery = randn*std + meanfirst;
-    xval = (jitterx+100)*cos(val);
-    yval = (jittery+100)*sin(val);
+    xval = (jitterx+100)*cos(val+theta_shift);
+    yval = (jittery+100)*sin(val+theta_shift);
     xPos(count) = screen.xCenter+xval;
     yPos(count) = screen.yCenter+yval;
     count = count+1;
@@ -23,8 +24,8 @@ count = 1;
 for val = 0:step:2*pi-step
     jitterx = randn*std + meansecond;
     jittery = randn*std + meansecond;
-    xval = (jitterx+50)*cos(val);
-    yval = (jittery+50)*sin(val);
+    xval = (jitterx+50)*cos(val+theta_shift);
+    yval = (jittery+50)*sin(val+theta_shift);
     xPosout(count) = screen.xCenter+xval;
     yPosout(count) = screen.yCenter+yval;
     count = count+1;
@@ -48,18 +49,21 @@ for i = 1:nGaborsout
 end
 
 % Gabor orientations 
-gabmean  = randn(1)*trial_mean + trial_dev;
+gabmean  = trial_mean;
 gaborAngles = zeros(1,nGabors);
 gaborAnglesout = zeros(1,nGaborsout);
 for ii = 1:nGabors
-    stimdev = randn(1)*stimdevmean + stimdevdev;
-    gaborAngles(ii) = gabmean + stimdev
+    stimdev = randn(1)*stimdevdev + stimdevmean;
+    gaborAngles(ii) = gabmean + stimdev;
 end
 
 for ii = 1:nGaborsout
-    stimdev = randn(1)*stimdevmean + stimdevdev;
-    gaborAnglesout(ii) = gabmean + stimdev
+    stimdev = randn(1)*stimdevdev + stimdevmean;
+    gaborAnglesout(ii) = gabmean + stimdev;
 end
+
+gaborAnglesout
+gaborAngles
 
 % Contrast
 gabor.propertiesMat(4) = contrast;
@@ -74,11 +78,11 @@ while ~KbCheck
     %Screen('BlendFunction', screen.window, 'GL_ONE', 'GL_ZERO');
     
     % Batch draw all of the Gabors to screen
-    Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles,...
+    Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles-90,...
         [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
     
      % Batch draw all of the Gabors to screen
-     Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout,...
+     Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout-90,...
          [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
     % Draw the fixation point

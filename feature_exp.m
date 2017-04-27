@@ -39,8 +39,15 @@ screen.pxPerDeg     = screen.windowRect(4) / screen.angle;
 screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
 
-trial_mean = 23;
-runtrial(screen,trial_mean)
+showinstructions(0,screen);
+WaitSecs(.5);
+
+for numblocks = t1:1
+    for numtrials = 1:1
+        trial_mean = rand(1)*180
+        runtrial(screen,trial_mean)
+    end
+end
 
 sca;
 end

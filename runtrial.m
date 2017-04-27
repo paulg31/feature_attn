@@ -1,10 +1,11 @@
 function runtrial( screen, trial_mean)
-showinstructions(0,screen);
-WaitSecs(.5);
+
 [arc] = drawarc( screen,trial_mean );
 
 Screen('FillPoly', screen.window, screen.white, arc.newpolyPoints);
-Screen('FillPoly', screen.window, screen.bgcolor, arc.polyPoints2);  
+Screen('FillPoly', screen.window, screen.bgcolor, arc.polyPoints2);
+Screen('FillPoly', screen.window, screen.white, arc.newpolyPointsop);
+Screen('FillPoly', screen.window, screen.bgcolor, arc.polyPoints2op);
 Screen('Flip', screen.window, .5*screen.ifi);
 
 WaitSecs(.5)
