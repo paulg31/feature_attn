@@ -1,7 +1,9 @@
 function feature_exp
 PsychDefaultSetup(2);
+
 Screen('Preference', 'SkipSyncTests', 2);
 screenNumber = max(Screen('Screens'));
+
 %Screen and display info   
 screen.width         = 19.7042; %iPad screen width in cm
 screen.distance      = 32; % Screen distance in cm
@@ -42,11 +44,14 @@ Screen('TextFont', screen.window, 'Times New Roman');
 showinstructions(0,screen);
 WaitSecs(.5);
 
-for numblocks = t1:1
-    for numtrials = 1:1
+for numblocks = 1:1
+    blocktotal = 0;
+    for numtrials = 1:2
         trial_mean = rand(1)*180
-        runtrial(screen,trial_mean)
+        [point_totes] = runtrial(screen,trial_mean);
+        blocktotal = blocktotal + point_totes;
     end
+    blocktotal
 end
 
 sca;

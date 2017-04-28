@@ -37,10 +37,9 @@ nGabors = numel(xPos);
 nGaborsout = numel(xPosout);
 
 % Make the destination rectangles for all the Gabors in the array
-baseRect    = [0 0 gabor.grateAlphaMaskSize gabor.grateAlphaMaskSize];
-allRects    = nan(4, nGabors);
+baseRect = [0 0 gabor.grateAlphaMaskSize gabor.grateAlphaMaskSize];
+allRects = nan(4, nGabors);
 allRectsout = nan(4, nGaborsout);
-
 for i = 1:nGabors
     allRects(:, i) = CenterRectOnPointd(baseRect, xPos(i), yPos(i));
     allRectsout(:, i) = CenterRectOnPointd(baseRect, xPosout(i), yPosout(i));
@@ -51,16 +50,19 @@ gabmean  = trial_mean;
 gaborAngles = zeros(1,nGabors);
 gaborAnglesout = zeros(1,nGaborsout);
 for ii = 1:nGabors
-    stimdev = randn*stimdevdev + stimdevmean;
-    stimdev2 = randn*stimdevdev + stimdevmean;
+    stimdev = rand*stimdevdev + stimdevmean;
     gaborAngles(ii) = gabmean + stimdev;
-    gaborAnglesout(ii) = gabmean + stimdev2;
+end
+
+for ii = 1:nGaborsout
+    stimdev = rand*stimdevdev + stimdevmean;
+    gaborAnglesout(ii) = gabmean + stimdev;
 end
 
 % Contrast
 gabor.propertiesMat(4) = contrast;
 
-% Flip
+% Perform initial flip to gray background and sync us to the retrace:
 Screen('Flip', screen.window);
 
 % Animation loop

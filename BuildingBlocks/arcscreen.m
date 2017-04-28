@@ -38,7 +38,7 @@ radius = 340;
 count = 1;
 xval = zeros(1,37);
 yval = zeros(1,37);
-for angle  = pi/2:pi/72:pi
+for angle  = 0 :pi/72:1.5*pi
     xval(count) = cos(angle)*radius +xCenter;
     yval(count) = sin(angle)*radius +yCenter;
     count = count +1;
@@ -49,15 +49,13 @@ cent = (pi/2 + pi)/2;
 newx = zeros(1,37);
 newy = zeros(1,37);
 count = 1;
-for val = pi/2:pi/72:pi
-    newy(count) = 10*normpdf(val,cent,sigma)+yval(count);
+for val = 0:pi/72:1.5*pi 
+    newy(count) = 10 + yval(count);
     newx(count) = xval(count);
-    count = count+1;
+    count = count+1; 
 end
 
-newxval = [xval newx];
-newyval = [yval newy];
-newpolyPoints = [newxval',newyval'];
+newpolyPoints = [newx',newy'];
 % Draw a filled polygon:
 
 Screen('FillPoly', window, [0.5, 0.5, 1], newpolyPoints);
