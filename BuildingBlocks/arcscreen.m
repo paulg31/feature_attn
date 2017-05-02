@@ -28,41 +28,19 @@ ifi = Screen('GetFlipInterval', window);
 % Get the centre coordinate of the window
 [xCenter, yCenter] = RectCenter(windowRect);
 
-% Sync us and get a time stamp
 vbl = Screen('Flip', window);
 waitframes = 1;
 dur = 1;
 radius = 340;
+step = pi/180;
+baseRect = [0 0 680 680];
+baseRect2 = [0 0 670 670];
+circlerect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+circlerect2 = CenterRectOnPointd(baseRect2,xCenter, yCenter);
+type2draw = 'FillOval';
 
-% Draw some filled and framed polygons:
-count = 1;
-xval = zeros(1,37);
-yval = zeros(1,37);
-for angle  = 0 :pi/72:1.5*pi
-    xval(count) = cos(angle)*radius +xCenter;
-    yval(count) = sin(angle)*radius +yCenter;
-    count = count +1;
-end
-polyPoints2 = [xval',yval']; 
-sigma = pi/15;
-cent = (pi/2 + pi)/2;
-newx = zeros(1,37);
-newy = zeros(1,37);
-count = 1;
-for val = 0:pi/72:1.5*pi 
-    newy(count) = 10 + yval(count);
-    newx(count) = xval(count);
-    count = count+1; 
-end
-
-newpolyPoints = [newx',newy'];
-% Draw a filled polygon:
-
-Screen('FillPoly', window, [0.5, 0.5, 1], newpolyPoints);
-Screen('FillPoly', window, black, polyPoints2);  
-
-% Draw a white dot where the mouse cursor is
-Screen('DrawDots', window, [xCenter yCenter], 10, white, [], 2);
+Screen(type2draw, window, white, circlerect);
+Screen(type2draw, window, black, circlerect2);
 
 % Flip to the screen
 vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);

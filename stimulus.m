@@ -63,22 +63,17 @@ gabor.propertiesMat(4) = contrast;
 % Flip
 Screen('Flip', screen.window);
 
-% Animation loop
-while ~KbCheck
-    
-    % Batch draw all of the Gabors to screen
-    Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles-90,...
-        [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
-    
-    % Batch draw all of the Gabors to screen
-    Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout-90,...
-        [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
+% Batch draw all of the Gabors to screen
+Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles-90,...
+    [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
-    % Draw the fixation point
-    Screen('DrawDots', screen.window, [screen.xCenter; screen.yCenter], 5, screen.white, [], 2);
+% Batch draw all of the Gabors to screen
+Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout-90,...
+    [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
-    % Flip our drawing to the screen
-    Screen('Flip', screen.window, screen.ifi);
+% Draw the fixation point
+Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
 
-end
+% Flip our drawing to the screen
+Screen('Flip', screen.window, screen.ifi);
 end

@@ -25,10 +25,10 @@ while ~KbCheck
     theta   = mod(Xdiff/L,1)*pi;
     actual  = pi-theta;
 
-    Screen('FillPoly', screen.window, screen.white, arc.newpolyPoints);
-    Screen('FillPoly', screen.window, screen.bgcolor, arc.polyPoints2);
-    Screen('FillPoly', screen.window, screen.white, arc.newpolyPointsop);
-    Screen('FillPoly', screen.window, screen.bgcolor, arc.polyPoints2op);
+    Screen(arc.type2draw, screen.window, screen.white, arc.poly);
+    Screen(arc.type2draw, screen.window, screen.bgcolor, arc.cover);
+    Screen(arc.type2draw, screen.window, screen.white, arc.polyopp);
+    Screen(arc.type2draw, screen.window, screen.bgcolor, arc.coveropp);
     Screen('DrawTexture', screen.window, recttexture, [], [], theta*180/pi);
     Screen('Flip', screen.window,screen.ifi);
     
