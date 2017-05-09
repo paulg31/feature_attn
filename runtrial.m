@@ -1,4 +1,4 @@
-function [point_totes,mouse_start,responseAngle] = runtrial( screen, trial_mean)
+function [point_totes,mouse_start,responseAngle] = runtrial( screen, design)
 
 % Draw fixation cross
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0); 
@@ -10,7 +10,7 @@ Screen('Flip', screen.window);
 fixDuration = screen.fixationdur*(1+screen.jitter*(2*rand()-1));
 WaitSecs(fixDuration);
 
-arc = drawarc( screen,trial_mean );
+arc = drawarc( screen,design );
 
 Screen(arc.type2draw, screen.window, screen.white, arc.poly);
 Screen(arc.type2draw, screen.window, screen.bgcolor, arc.cover);
@@ -24,13 +24,13 @@ WaitSecs(.5)
 gabor = stim_info(screen);
 WaitSecs(.5);
 
-stimulus(screen, gabor,trial_mean);
-WaitSecs(1);
+stimulus(screen, gabor,design);
+KbWait;
 
 [responseAngle, mouse_start] = mousetracking(screen,arc);
 WaitSecs(.5);
 
-[ point_totes ] = feedback( trial_mean,responseAngle);
+[ point_totes ] = feedback( design, responseAngle);
 WaitSecs(.5);
 
 end

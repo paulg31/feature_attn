@@ -4,14 +4,20 @@ sessionNo = 1;
 suffix = 'abc';
 familyId = 'abc';
 
+design.contrasts = [.5];
+design.numtrials = [1];
+design.radii = [4 6 8];%[in out arc] radii in visual angle
+design.sigmas = [5 6.5 2.5];%[arc sigma. gapor position sigma. gabor orientation sigma]
+design.thetamean = [5.5]; %mean of noise for orientation arount trial_mean
+
+
 % %Folders
 % [thispath,~,~] = fileparts(mfilename('fullpath'));
 % filename = [thispath filesep 'designs' filesep 'optdesign_' subjId '.mat'];
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'results' filesep()];
 outputFile          = [resultsFolder,'Subj',subjId,'_Session'...
-                            num2str(sessionNo) familyId '_data' suffix,'.mat'];
-                        
+                            num2str(sessionNo) familyId '_data' suffix,'.mat'];            
                         
 PsychDefaultSetup(2);
 
@@ -56,8 +62,6 @@ screen.ifi = Screen('GetFlipInterval', screen.window);
 Screen('TextFont', screen.window, 'Times New Roman');
 screen = crossinfo(screen);
 
-design.contrasts = [.5 .25];
-
 HideCursor;
 
 showinstructions(0,screen);
@@ -67,29 +71,41 @@ for iBlock = 1:numel(design.contrasts)
     data.mat{iBlock}    = [];
 end
 
-for iBlock = 1:1
+for iBlock = 1:numel(design.contrasts)
     
 
     data.block_type{iBlock}     = 'trialz';
-    data.fields{iBlock}         = {'trial','response','correct','trial_mean','mouse start x','mouse start y'};    
+    data.fields{iBlock}         = {'trial','response','correct','trial mean','mouse start x','mouse start y','cue type'};    
 
     %Prepare empty data matrix
     if isempty(data.mat{iBlock})
-        data.mat{iBlock} =  NaN(3,6); %trial num, item to save nume
+        data.mat{iBlock} =  NaN(design.numtrials(iBlock),numel(data.fields{iBlock})) ; %trial num, item to save nume
     end
 
-    for trial = 1:3
-        trial_mean = rand(1)*180
-        [point_totes,mouse_start,responseAngle] = runtrial(screen,trial_mean);
+    showinstructions(2,screen);
+    
+    for trial = 1:design.numtrials(iBlock)
+        design.trial_mean = rand(1)*180
+        
+%         x = rand
+%         if x < .5
+             design.type_draw = 1;
+%         elseif x >= .5 && x < .75
+%             design.type_draw = 2;
+%         else
+%              design.type_draw = 3;
+%         end
+%         
+        [point_totes,mouse_start,responseAngle] = runtrial(screen,design);
    
         data.mat{iBlock}(trial,:) = [ ...
-            trial, responseAngle, point_totes,trial_mean,mouse_start(1), mouse_start(2) ...
+            trial, responseAngle, point_totes,design.trial_mean,mouse_start(1), mouse_start(2),design.type_draw ...
         ];
         
         % Save data at the end of each trial
         save(outputFile, 'data');
     end
-    
+end 
     % Save data at the end of the block
     save(outputFile, 'data'); 
     
@@ -111,6 +127,4 @@ for iBlock = 1:1
 
     % Clear screen
     sca;
-
-end
 end

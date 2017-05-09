@@ -1,11 +1,14 @@
-function stimulus(screen,gabor,trial_mean)
-contrast        = .5;
-stimdevmean     = 5.5;
-stimdevdev      = 2.5;
-jitter_std      = 6.5;
-radius_outer    = 175;
-radius_inner    = 95;
+function stimulus(screen,gabor,design)
+contrast        = design.contrasts(1);
+stimdevmean     = design.thetamean(1);
+stimdevdev      = design.sigmas(3);
+jitter_std      = design.sigmas(2);
+
+radius_outer    = design.radii(2)*screen.pxPerDeg;
+radius_inner    = design.radii(1)*screen.pxPerDeg;
+
 step            = pi/4;
+shift           = pi/8;
 span            = 0:step:2*pi-step;
 xPosout = zeros(1,numel(span));
 yPosout = zeros(1,numel(span));
@@ -19,8 +22,8 @@ for val = span
     jitterx = randn*jitter_std + radius_inner;
     jittery = randn*jitter_std + radius_inner;   
     
-    xvalout = (jitterxout)*cos(val);
-    yvalout = (jitteryout)*sin(val);
+    xvalout = (jitterxout)*cos(val+shift);
+    yvalout = (jitteryout)*sin(val+shift);
     xval = (jitterx)*cos(val);
     yval = (jittery)*sin(val);
     
@@ -47,7 +50,7 @@ for i = 1:nGabors
 end
 
 % Gabor orientations 
-gabmean  = trial_mean;
+gabmean  = design.trial_mean;
 gaborAngles = zeros(1,nGabors);
 gaborAnglesout = zeros(1,nGaborsout);
 for ii = 1:nGabors

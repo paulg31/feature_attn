@@ -13,18 +13,18 @@ switch type
         text = [text '\n\n\n\n\n Match the bar to the orientation of the stimulus'];
         ypos = 0.25;
         
-    case 2  % Left/right
-        text = 'Pre-Cue';
-        
-    case 3  % Reliability discrimination
-        text = 'Stimulus';
-        ypos = .4;
-    case 4
-        text = 'Post-Cue';
-        ypos = .4;
-    case 5 %Break Time
-        text = 'Break time';
-        ypos = .4;
+    case 2  % Next Block
+        text = 'New Block';
+        ypos = 0.25;
+%     case 3  % Reliability discrimination
+%         text = 'Stimulus';
+%         ypos = .4;
+%     case 4
+%         text = 'Post-Cue';
+%         ypos = .4;
+%     case 5 %Break Time
+%         text = 'Break time';
+%         ypos = .4;
         
     otherwise
         text = [];

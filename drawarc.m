@@ -1,15 +1,17 @@
-function [arc] = drawarc(screen,trial_mean)
-type_draw = 1;
-switch type_draw
+function [arc] = drawarc(screen,design)
+%CIRCLE SIZE%
+
+switch design.type_draw
     case 1
-        radius      = 200;
-        arc_sigma   = 2.5;
+        radius      = design.radii(3)*screen.pxPerDeg;
+        arc_sigma   = design.sigmas(1);
         dev_draw    = 3;
-        arc_mean    = (randn*arc_sigma + trial_mean)*pi/180;
+        
+        arc_mean    = (randn*arc_sigma + design.trial_mean)*pi/180;
         arc_step    = pi/180;
         arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
         arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
-        sigma       = arc_sigma*pi/180;     %sigma in rads
+        sigma       = arc_sigma*pi/180;     %sigma in rads for normpdf
 
         % Draw arc cover
         count     = 1;
@@ -49,14 +51,16 @@ switch type_draw
         % Arc
         arc.poly   = [newx',newy'];
         arc.polyopp = [newxop',newyop'];
+        
     case 2
-        baseRect = [0 0 680 680];
-        baseRect2 = [0 0 670 670];
+        baseRect = [0 0 500 500];
+        baseRect2 = [0 0 490 490];
         arc.poly = CenterRectOnPointd(baseRect, screen.xCenter, screen.yCenter);
         arc.cover = CenterRectOnPointd(baseRect2,screen.xCenter, screen.yCenter);
         arc.polyopp = [0 0 0 0];
         arc.coveropp = [0 0 0 0];
         arc.type2draw = 'FillOval';
+        
     case 3
         arc.poly = [0 0 0 0];
         arc.cover = [0 0 0 0];
