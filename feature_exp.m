@@ -4,10 +4,10 @@ sessionNo = 1;
 suffix = 'abc';
 familyId = 'abc';
 
-design.contrasts = [.5];
-design.numtrials = [1];
+design.contrasts = [.5]; %blocked
+design.numtrials = [1]; %triasl per block at each index
 design.radii = [4 6 8];%[in out arc] radii in visual angle
-design.sigmas = [5 6.5 2.5];%[arc sigma. gapor position sigma. gabor orientation sigma]
+design.sigmas = [5 6.5 2.5];%[arc sigma. gabor position sigma. gabor orientation sigma]
 design.thetamean = [5.5]; %mean of noise for orientation arount trial_mean
 
 
@@ -94,7 +94,7 @@ for iBlock = 1:numel(design.contrasts)
 %             design.type_draw = 2;
 %         else
 %              design.type_draw = 3;
-%         end
+%         end 
 %         
         [point_totes,mouse_start,responseAngle] = runtrial(screen,design);
    
