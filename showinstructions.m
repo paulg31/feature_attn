@@ -16,10 +16,8 @@ switch type
     case 2  % Next Block
         text = 'New Block';
         ypos = 0.25;
-%     case 3  % Reliability discrimination
-%         text = 'Stimulus';
-%         ypos = .4;
-%     case 4
+        
+%     case 3
 %         text = 'Post-Cue';
 %         ypos = .4;
 %     case 5 %Break Time

@@ -1,17 +1,18 @@
-function [arc] = drawarc(screen,design)
+function [arc] = drawarc(screen,design,params)
 %CIRCLE SIZE%
 
 switch design.type_draw
+    % Draw gauss arcs
     case 1
         radius      = design.radii(3)*screen.pxPerDeg;
-        arc_sigma   = design.sigmas(1);
-        dev_draw    = 3;
+        arc_sigma   = params.width;
+        dev_draw    = 3; % how far out to draw arcs
         
         arc_mean    = (randn*arc_sigma + design.trial_mean)*pi/180;
         arc_step    = pi/180;
         arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
         arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
-        sigma       = arc_sigma*pi/180;     %sigma in rads for normpdf
+        sigma       = arc_sigma*pi/180;     % sigma in rads for normpdf
 
         % Draw arc cover
         count     = 1;
@@ -53,8 +54,9 @@ switch design.type_draw
         arc.polyopp = [newxop',newyop'];
         
     case 2
-        baseRect = [0 0 500 500];
-        baseRect2 = [0 0 490 490];
+        % Draw circle
+        baseRect = [0 0 450 450 ];
+        baseRect2 = [0 0 440 440];
         arc.poly = CenterRectOnPointd(baseRect, screen.xCenter, screen.yCenter);
         arc.cover = CenterRectOnPointd(baseRect2,screen.xCenter, screen.yCenter);
         arc.polyopp = [0 0 0 0];
@@ -62,6 +64,7 @@ switch design.type_draw
         arc.type2draw = 'FillOval';
         
     case 3
+        % Draw nothing
         arc.poly = [0 0 0 0];
         arc.cover = [0 0 0 0];
         arc.polyopp = [0 0 0 0];

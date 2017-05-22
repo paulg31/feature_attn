@@ -1,12 +1,16 @@
-function stimulus(screen,gabor,design)
-contrast        = design.contrasts(1);
+function stimulus(screen,gabor,design,params)
+
+% Stim params
+contrast        = params.contrast;
 stimdevmean     = design.thetamean(1);
 stimdevdev      = design.sigmas(3);
 jitter_std      = design.sigmas(2);
 
+% Radii for how far from center to draw gabors
 radius_outer    = design.radii(2)*screen.pxPerDeg;
 radius_inner    = design.radii(1)*screen.pxPerDeg;
 
+% Set the steps for gabor positions around circle
 step            = pi/4;
 shift           = pi/8;
 span            = 0:step:2*pi-step;
@@ -15,18 +19,22 @@ yPosout = zeros(1,numel(span));
 xPos    = zeros(1,numel(span));
 yPos    = zeros(1,numel(span));
 
+% Set the xPosition and yPosition for the Gabros
 count = 1;
 for val = span
+    % Jittered radius of each gabor
     jitterxout = randn*jitter_std + radius_outer;
     jitteryout = randn*jitter_std + radius_outer;
     jitterx = randn*jitter_std + radius_inner;
     jittery = randn*jitter_std + radius_inner;   
     
+    % XY values of gabors, outer gabors are shifted
     xvalout = (jitterxout)*cos(val+shift);
     yvalout = (jitteryout)*sin(val+shift);
     xval = (jitterx)*cos(val);
     yval = (jittery)*sin(val);
     
+    % Create array of values for 'draw' functions
     xPosout(count) = screen.xCenter+xvalout;
     yPosout(count) = screen.yCenter+yvalout;
     xPos(count) = screen.xCenter+xval;
@@ -39,7 +47,7 @@ end
 nGabors = numel(xPos);
 nGaborsout = numel(xPosout);
 
-% Make the destination rectangles for all the Gabors in the array
+% Make the destination rectangles for all the Gabors
 baseRect    = [0 0 gabor.grateAlphaMaskSize gabor.grateAlphaMaskSize];
 allRects    = nan(4, nGabors);
 allRectsout = nan(4, nGaborsout);
