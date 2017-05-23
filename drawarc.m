@@ -1,76 +1,103 @@
 function [arc] = drawarc(screen,design,params)
-%CIRCLE SIZE%
 
-switch design.type_draw
-    % Draw gauss arcs
-    case 1
-        radius      = design.radii(3)*screen.pxPerDeg;
-        arc_sigma   = params.width;
-        dev_draw    = 3; % how far out to draw arcs
-        
-        arc_mean    = (randn*arc_sigma + design.trial_mean)*pi/180;
-        arc_step    = pi/180;
-        arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
-        arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
-        sigma       = arc_sigma*pi/180;     % sigma in rads for normpdf
+% Arc Cue Information
+radius      = design.radii(3)*screen.pxPerDeg;
+arc_sigma   = params.width;
+dev_draw    = 3; % how far out to draw arcs
 
-        % Draw arc cover
-        count     = 1;
-        spans     = arc_start:arc_step:arc_end;
-        xval      = zeros(1,numel(spans));
-        yval      = zeros(1,numel(spans));
-        newx      = zeros(1,numel(spans));
-        newy      = zeros(1,numel(spans));
-        xvalop    = zeros(1,numel(spans));
-        yvalop    = zeros(1,numel(spans));
-        newxop    = zeros(1,numel(spans));
-        newyop    = zeros(1,numel(spans));
+arc_mean    = (randn*arc_sigma + design.trial_mean)*pi/180;
+arc_step    = pi/180;
+arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
+arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
+sigma       = arc_sigma*pi/180;     % sigma in rads for normpdf
 
-        for angle  = spans
-            dist_height   = 10*normpdf(angle,arc_mean,sigma)+radius;
+% Draw arc cover
+count     = 1;
+spans     = arc_start:arc_step:arc_end;
+xval      = zeros(1,numel(spans));
+yval      = zeros(1,numel(spans));
+newx      = zeros(1,numel(spans));
+newy      = zeros(1,numel(spans));
+xvalop    = zeros(1,numel(spans));
+yvalop    = zeros(1,numel(spans));
+newxop    = zeros(1,numel(spans));
+newyop    = zeros(1,numel(spans));
 
-            % Arc cover points
-            xval(count)   = cos(angle)*radius +screen.xCenter;
-            yval(count)   = -sin(angle)*radius +screen.yCenter;
-            xvalop(count) = -cos(angle)*radius +screen.xCenter;
-            yvalop(count) = sin(angle)*radius +screen.yCenter;
+for angle  = spans
+    dist_height   = 10*normpdf(angle,arc_mean,sigma)+radius;
 
-            % Arc points
-            newy(count)   = -sin(angle)*(dist_height) + screen.yCenter;
-            newx(count)   = cos(angle)*(dist_height) + screen.xCenter;
-            newyop(count) = sin(angle)*(dist_height) + screen.yCenter;
-            newxop(count) = -cos(angle)*(dist_height) + screen.xCenter;
+    % Arc cover points
+    xval(count)   = cos(angle)*radius +screen.xCenter;
+    yval(count)   = -sin(angle)*radius +screen.yCenter;
+    xvalop(count) = -cos(angle)*radius +screen.xCenter;
+    yvalop(count) = sin(angle)*radius +screen.yCenter;
 
-            count = count +1;
-        end
+    % Arc points
+    newy(count)   = -sin(angle)*(dist_height) + screen.yCenter;
+    newx(count)   = cos(angle)*(dist_height) + screen.xCenter;
+    newyop(count) = sin(angle)*(dist_height) + screen.yCenter;
+    newxop(count) = -cos(angle)*(dist_height) + screen.xCenter;
+    
+    count = count +1;
+end
 
-        arc.type2draw = 'FillPoly';        
+% Circle Cue Information
+circle.baseRect = [0 0 450 450 ];
+circle.baseRect2 = [0 0 440 440];
+
+% Precue
+switch design.pre_cue
+    
+    case 1 % Arcs
+        arc.type2draw.pre = 'FillPoly';  
         % Arc Cover
-        arc.cover     = [xval',yval'];
-        arc.coveropp   = [xvalop',yvalop'];
+        arc.cover.pre     = [xval',yval'];
+        arc.coveropp.pre   = [xvalop',yvalop'];
+        % Arc
+        arc.poly.pre   = [newx',newy'];
+        arc.polyopp.pre = [newxop',newyop'];
+        
+    case 0 % circle
+        arc.poly.pre = CenterRectOnPointd(circle.baseRect, screen.xCenter, screen.yCenter);
+        arc.cover.pre = CenterRectOnPointd(circle.baseRect2,screen.xCenter, screen.yCenter);
+        arc.polyopp.pre = [0 0 0 0];
+        arc.coveropp.pre = [0 0 0 0];
+        arc.type2draw.pre = 'FillOval';
+        
+    case 2 % nothing
+        arc.poly.pre = [0 0 0 0];
+        arc.cover.pre = [0 0 0 0];
+        arc.polyopp.pre = [0 0 0 0];
+        arc.coveropp.pre = [0 0 0 0];
+        arc.type2draw.pre = 'FillOval';
+end
+
+% Postcue
+switch design.post_cue
+
+    case 1 %Arcs
+        arc.type2draw.post = 'FillPoly';        
+        % Arc Cover
+        arc.cover.post     = [xval',yval'];
+        arc.coveropp.post   = [xvalop',yvalop'];
 
         % Arc
-        arc.poly   = [newx',newy'];
-        arc.polyopp = [newxop',newyop'];
+        arc.poly.post   = [newx',newy'];
+        arc.polyopp.post = [newxop',newyop'];
         
-    case 2
-        % Draw circle
-        baseRect = [0 0 450 450 ];
-        baseRect2 = [0 0 440 440];
-        arc.poly = CenterRectOnPointd(baseRect, screen.xCenter, screen.yCenter);
-        arc.cover = CenterRectOnPointd(baseRect2,screen.xCenter, screen.yCenter);
-        arc.polyopp = [0 0 0 0];
-        arc.coveropp = [0 0 0 0];
-        arc.type2draw = 'FillOval';
+    case 0 % circle
+        arc.poly.post = CenterRectOnPointd(circle.baseRect, screen.xCenter, screen.yCenter);
+        arc.cover.post = CenterRectOnPointd(circle.baseRect2,screen.xCenter, screen.yCenter);
+        arc.polyopp.post = [0 0 0 0];
+        arc.coveropp.post = [0 0 0 0];
+        arc.type2draw.post = 'FillOval';
         
-    case 3
-        % Draw nothing
-        arc.poly = [0 0 0 0];
-        arc.cover = [0 0 0 0];
-        arc.polyopp = [0 0 0 0];
-        arc.coveropp = [0 0 0 0];
-        arc.type2draw = 'FillOval';
-        
+    case 2 % nothing
+        arc.poly.post = [0 0 0 0];
+        arc.cover.post = [0 0 0 0];
+        arc.polyopp.post = [0 0 0 0];
+        arc.coveropp.post = [0 0 0 0];
+        arc.type2draw.post = 'FillOval';
 end
 end
 

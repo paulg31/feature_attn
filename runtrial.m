@@ -15,13 +15,10 @@ arc = drawarc( screen,design,params );
 
 % Draw the cues: main arc, gray cover, main arc on opp side, cover on opp
 % side
-if design.pre_cue == 1
-    Screen(arc.type2draw, screen.window, screen.white, arc.poly);
-    Screen(arc.type2draw, screen.window, screen.bgcolor, arc.cover);
-    Screen(arc.type2draw, screen.window, screen.white, arc.polyopp);
-    Screen(arc.type2draw, screen.window, screen.bgcolor, arc.coveropp);
-end
-
+Screen(arc.type2draw.pre, screen.window, screen.white, arc.poly.pre);
+Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.cover.pre);
+Screen(arc.type2draw.pre, screen.window, screen.white, arc.polyopp.pre);
+Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 
 % Cross and flip
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
@@ -34,13 +31,16 @@ WaitSecs(fixDuration);
 
 % Draw Gabors
 stimulus(screen, gabor,design,params);
-%KbWait;
+
+% KbWait;
 WaitSecs(fixDuration);
 
-[responseAngle, mouse_start] = mousetracking(screen,arc,design);
+% Begin response
+[responseAngle, mouse_start] = mousetracking(screen,arc);
 WaitSecs(.5);
 
-[ point_totes ] = feedback( design, responseAngle);
+% Get points from response, show feedback during train
+[ point_totes ] = feedback( design, responseAngle,iBlock,screen);
 WaitSecs(.5);
 
 end

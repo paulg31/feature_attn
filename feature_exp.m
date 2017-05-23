@@ -3,23 +3,23 @@ function feature_exp
 subjId = 'pjg';
 sessionNo = 1;
 suffix = 'abc';
-familyId = 'abc';
 
 % Exp Design
 design.types        = [1 2 3 4 5];
 design.contrasts    = [.1 .5 1];  % (low, high, train)
 design.width        = [2.5 5 3];    % distribution width types, narrow, wide, train
-design.numtrials    = [3 3 3 3 3];    % trials per block at each index
+design.trial_nums    = [3 3 3 3 3];    % trials per block at each index
 design.radii        = [4 6 8];  % [in out arc] radii in visual angle
 design.sigmas       = [NaN 6.5 2.5]; % [arc sigma. gabor position sigma. gabor orientation sigma]
-design.thetamean    = [5.5];    % mean of noise for orientation arount target mean
- 
+design.thetamean    = 5.5;    % mean of noise for orientation arount target mean
+target_cue          = 1; %arc
+null_cue            = 2; % 0 for circle, 2 for nothing
 
 % Folders
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'results' filesep()];
 outputFile          = [resultsFolder,'Subj',subjId,'_Session'...
-                            num2str(sessionNo) familyId '_data' suffix,'.mat'];            
+                            num2str(sessionNo) '_data' suffix,'.mat'];            
                         
 %Create results folder if it does not exist already
 if ~exist([currentPath filesep() 'results'],'dir')
@@ -74,84 +74,103 @@ HideCursor;
 showinstructions(0,screen);
 WaitSecs(.5);
 
-% Empty data mats for each block
+% Block Order
+perm_order = design.types(2:numel(design.types));
+design.types = [1];
+num_reps  = 2;
+stop = 0;
+while stop == 0
+    for n = 1:num_reps
+        perm = perm_order(randperm(numel(perm_order)));
+        design.types = [design.types perm];
+    end
+    
+    if design.types(5) == design.types(6)
+        stop = 0;
+        design.types = [1];
+    else
+        stop = 1;
+    end
+end
+
+% Empty data mats for each block and organize trials
 for iBlock = 1:numel(design.types)
         data.mat{iBlock} = [];
+        design.numtrials(iBlock) = design.trial_nums(design.types(iBlock));
 end
 
 % Begin Block
 for iBlock = 1:numel(design.types)
-            
-    data.block_type{iBlock}     = 'trialz';
-    data.fields{iBlock}         = {'trial','response','correct','trial mean','mouse start x','mouse start y','cues'};    
-
+               
     % Prepare empty data matrix
     if isempty(data.mat{iBlock})
         data.mat{iBlock} =  NaN(design.numtrials(iBlock),numel(data.fields{iBlock})) ; %trial num, item to save nume
     end
+    data.fields{iBlock}         = {'trial','response','correct','trial mean','mouse start x','mouse start y','cues'};
     
     % Block Type
-    switch design.types(iBlock)%% probabily will start from 1:?? but cb so that 2:?? is not train
+    switch design.types(iBlock)
         case 1 % Train
             params.width = design.width(3);
             params.contrast = design.contrasts(3);
-            feedback_type = 1 ;
+            data.block_type{iBlock}     = 'T';
+
         case 2% Low-Narrow
             params.width = design.width(1);
             params.contrast = design.contrasts(1);
-            feedback_type = 0 ;
+            data.block_type{iBlock}     = 'LN';
+
         case 3% Low-Wide
             params.width = design.width(2);
             params.contrast = design.contrasts(1);
-            feedback_type = 0 ;
+            data.block_type{iBlock}     = 'LW';
+
         case 4% High-Narrow
             params.width = design.width(1);
             params.contrast = design.contrasts(2);
-            feedback_type = 0 ;
+            data.block_type{iBlock}     = 'HN';
+
         case 5% High-Wide
             params.width = design.width(2);
             params.contrast = design.contrasts(2);
-            feedback_type = 0 ;
+            data.block_type{iBlock}     = 'HW';
+
     end
     
-        % Trials
-            for trial = 1:design.numtrials(iBlock)
-                design.trial_mean = rand(1)*180;
-                design.type_draw = 1;
-                
-                     % Cue appearances
-                     x = rand;
-                     if x <.4
-                        design.pre_cue = 1;
-                        design.post_cue = 1;
-                        cues = 3;
-                        
-                     elseif x <.8 && x >= .4
-                        design.pre_cue = 0; 
-                        design.post_cue = 1;
-                        cues = 2;
-                     else
-                        design.pre_cue = 0;
-                        design.post_cue = 0;
-                        cues = 1;
-                     end
+    % Trials
+    for trial = 1:design.numtrials(iBlock)
+        design.trial_mean = rand(1)*180;
 
-                % Pass info to runtrial
-                [point_totes,mouse_start,responseAngle] = runtrial(screen,design,iBlock,params);
-                
-%                 total = point_totes;
-%                 completion = 0;
-%                 displayscore(total, completion ,screen, feedback_type)
+             % Cue appearances
+             x = rand;
+             if x <.4 %arc arc
+                design.pre_cue = target_cue;
+                design.post_cue = target_cue;
+                cues = 3;
 
-                % points to save
-                data.mat{iBlock}(trial,:) = [ ...
-                    trial, responseAngle, point_totes,design.trial_mean,mouse_start(1), mouse_start(2), cues ...
-                ];
-
-                % Save data at the end of each trial
-                save(outputFile, 'data');
+             elseif x <.8 && x >= .4 %none arc
+                design.pre_cue = null_cue; 
+                design.post_cue = target_cue;
+                cues = 2;
                 
-            end
+             else %none none
+                design.pre_cue = null_cue;
+                design.post_cue = null_cue;
+                cues = 1;
+             end
+
+        % Pass info to runtrial
+        [point_totes,mouse_start,responseAngle] = runtrial(screen,design,iBlock,params);
+
+        % save into mat
+        data.mat{iBlock}(trial,:) = [ ...
+            trial, responseAngle, point_totes,design.trial_mean,mouse_start(1), mouse_start(2), cues ...
+        ];
+
+        % Save data at the end of each trial
+        save(outputFile, 'data');
+
+    end
     
     % Save data at the end of the block
     save(outputFile, 'data'); 

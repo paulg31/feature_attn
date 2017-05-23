@@ -1,4 +1,5 @@
-function [responseAngle, mouse_start] = mousetracking(screen,arc,design)
+function [responseAngle, mouse_start] = mousetracking(screen,arc)
+% Bar Info
 texturerect = ones(10,300).*screen.white;
 recttexture = Screen('MakeTexture',screen.window,texturerect);
 
@@ -30,13 +31,11 @@ while ~exitLoop
     actual  = pi-theta;
 
     % Draw postcue only sometimes
-if design.post_cue == 1
-        Screen(arc.type2draw, screen.window, screen.white, arc.poly);
-        Screen(arc.type2draw, screen.window, screen.bgcolor, arc.cover);
-        Screen(arc.type2draw, screen.window, screen.white, arc.polyopp);
-        Screen(arc.type2draw, screen.window, screen.bgcolor, arc.coveropp);
-end
 
+        Screen(arc.type2draw.post, screen.window, screen.white, arc.poly.post);
+        Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.cover.post);
+        Screen(arc.type2draw.post, screen.window, screen.white, arc.polyopp.post);
+        Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
     
     Screen('DrawTexture', screen.window, recttexture, [], [], theta*180/pi);
     Screen('Flip', screen.window,screen.ifi);

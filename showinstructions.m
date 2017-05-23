@@ -1,5 +1,6 @@
 function showinstructions(type,screen)
 % Show instructions on screen, wait for keypress to continue
+% Need to change these to go along with experiment
 
 switch type
     
@@ -16,13 +17,6 @@ switch type
     case 2  % Next Block
         text = 'New Block';
         ypos = 0.25;
-        
-%     case 3
-%         text = 'Post-Cue';
-%         ypos = .4;
-%     case 5 %Break Time
-%         text = 'Break time';
-%         ypos = .4;
         
     otherwise
         text = [];
