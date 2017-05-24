@@ -58,7 +58,7 @@ for i = 1:nGabors
 end
 
 % Gabor orientations 
-gabmean  = design.trial_mean;
+gabmean  = params.trial_mean;
 gaborAngles = zeros(1,nGabors);
 gaborAnglesout = zeros(1,nGaborsout);
 for ii = 1:nGabors

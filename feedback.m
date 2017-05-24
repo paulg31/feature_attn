@@ -1,6 +1,6 @@
-function [ point_totes ] = feedback( design, responseAngle,iBlock,screen)
+function [ point_totes ] = feedback( params, responseAngle,iBlock,screen)
     sigma       = 10;%some value?
-    expo        = ((responseAngle-design.trial_mean)^2)/(2*sigma^2);
+    expo        = ((responseAngle-params.trial_mean)^2)/(2*sigma^2);
     points_prob = exp(-expo);
     point_totes = round(10*points_prob);
     

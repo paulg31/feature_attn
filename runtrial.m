@@ -27,21 +27,19 @@ WaitSecs(fixDuration);
 
 % Get gabor params
 gabor = stim_info(screen);
-WaitSecs(fixDuration);
 
 % Draw Gabors
 stimulus(screen, gabor,design,params);
 
 % KbWait;
-WaitSecs(fixDuration);
+WaitSecs(screen.stim_duration);
 
 % Begin response
 [responseAngle, mouse_start] = mousetracking(screen,arc);
-WaitSecs(.5);
 
 % Get points from response, show feedback during train
-[ point_totes ] = feedback( design, responseAngle,iBlock,screen);
-WaitSecs(.5);
+[ point_totes ] = feedback( params, responseAngle,iBlock,screen);
 
+WaitSecs(screen.betweentrials);
 end
 

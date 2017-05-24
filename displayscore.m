@@ -10,10 +10,8 @@ Screen('TextSize', screen.window, screen.text_size);
 DrawFormattedText(screen.window,text,...
     'center', screen.Ypixels * 0.4, screen.white);
 
-%Flip to Screen
+% Flip to Screen
 Screen('Flip', screen.window);
-
-% WaitSecs(screen.feedback_time);
 
 % Enable only SPACE to continue
 RestrictKeysForKbCheck(32);

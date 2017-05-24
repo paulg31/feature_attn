@@ -1,11 +1,15 @@
 function [arc] = drawarc(screen,design,params)
 
+% Circle Cue diameter and thickness in pixels
+diam = screen.circle_size*screen.pxPerDeg;
+thick = screen.circle_thickness*screen.pxPerDeg;
+
 % Arc Cue Information
 radius      = design.radii(3)*screen.pxPerDeg;
 arc_sigma   = params.width;
 dev_draw    = 3; % how far out to draw arcs
 
-arc_mean    = (randn*arc_sigma + design.trial_mean)*pi/180;
+arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;
 arc_step    = pi/180;
 arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
 arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
@@ -42,11 +46,11 @@ for angle  = spans
 end
 
 % Circle Cue Information
-circle.baseRect = [0 0 450 450 ];
-circle.baseRect2 = [0 0 440 440];
+circle.baseRect = [0 0 diam diam ];
+circle.baseRect2 = [0 0 diam-thick diam-thick];
 
 % Precue
-switch design.pre_cue
+switch params.pre_cue
     
     case 1 % Arcs
         arc.type2draw.pre = 'FillPoly';  
@@ -73,7 +77,7 @@ switch design.pre_cue
 end
 
 % Postcue
-switch design.post_cue
+switch params.post_cue
 
     case 1 %Arcs
         arc.type2draw.post = 'FillPoly';        
