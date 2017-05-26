@@ -15,9 +15,9 @@ end
 
 % Exp Design
 design.types        = [1 2 3 4 5];
-design.contrasts    = [.1 .5 1];        % (low, high, train)
+design.contrasts    = [.05 .2 1];        % (low, high, train)
 design.width        = [2.5 5 3];        % distribution width types, narrow, wide, train
-design.trial_nums   = [1 1 1 1 1];      % trials per block at each index
+design.trial_nums   = [3 3 3 3 3];      % trials per block at each index
 design.radii        = [4 6 8];          % [in out arc] radii in visual angle
 design.sigmas       = [NaN 6.5 2.5];    % [arc sigma. gabor position sigma. gabor orientation sigma]
 design.thetamean    = 5.5;              % mean of noise for orientation of target mean
@@ -99,6 +99,7 @@ screen.text_size     = 36;
 screen.white         = WhiteIndex(screenNumber);
 screen.black         = BlackIndex(screenNumber);
 screen.bgcolor       = screen.white / 2;
+screen.lesswhite     = screen.white / .1;
 screen.darkgray      = 10/255;
 screen.fixationdur   = 0.5;
 screen.ISI           = 0.5;     % Inter-stimulus-interval
@@ -108,7 +109,7 @@ screen.sound_volume  = 2;
 screen.jitter        = 0.1;     % 10% random jitter of durations
 screen.gabor_drift   = 0;       % Gabor drift speed (0=static)
 screen.stim_duration = .5;      % Stimulus presentation time     
-screen.circle_size   = design.radii(3);   % Size of circle cue(should be same as arc radius*2)
+screen.circle_size   = 2*design.radii(3);   % Size of circle cue(should be same as arc radius*2)
 screen.circle_thickness   = .2;  % Thickness of circle cue in degrees(can be changed)
 
 % Correction to stimulus width/period since previously reported dva were off
@@ -139,7 +140,7 @@ WaitSecs(.5);
 % Begin Block
 for iBlock = blockStart:numel(design.types)
     
-    data.fields{iBlock}         = {'trial','response','correct','trial mean','pre cue', 'post cue'};
+    data.fields{iBlock}         = {'trial','response','points','trial mean','pre cue', 'post cue'};
     design.fields{iBlock}       = {'trial', 'mouse start x','mouse start y', ' width', 'contrast'}; 
     
     % Prepare empty data matrix
@@ -182,15 +183,15 @@ for iBlock = blockStart:numel(design.types)
 
              % Cue appearances
              x = rand;
-             if x <.4 %arc arc
+             if x <.4 % arc arc
                 params.pre_cue = target_cue;
                 params.post_cue = target_cue;
 
-             elseif x <.8 && x >= .4 %none arc
+             elseif x <.8 && x >= .4 % none arc
                 params.pre_cue = null_cue; 
                 params.post_cue = target_cue;
                 
-             else %none none
+             else % none none
                 params.pre_cue = null_cue;
                 params.post_cue = null_cue;
              end

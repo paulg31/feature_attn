@@ -15,9 +15,9 @@ arc = drawarc( screen,design,params );
 
 % Draw the cues: main arc, gray cover, main arc on opp side, cover on opp
 % side
-Screen(arc.type2draw.pre, screen.window, screen.white, arc.poly.pre);
+Screen(arc.type2draw.pre, screen.window, screen.lesswhite, arc.poly.pre);
 Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.cover.pre);
-Screen(arc.type2draw.pre, screen.window, screen.white, arc.polyopp.pre);
+Screen(arc.type2draw.pre, screen.window, screen.lesswhite, arc.polyopp.pre);
 Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 
 % Cross and flip
@@ -35,10 +35,10 @@ stimulus(screen, gabor,design,params);
 WaitSecs(screen.stim_duration);
 
 % Begin response
-[responseAngle, mouse_start] = mousetracking(screen,arc);
+[responseAngle, mouse_start,bar] = mousetracking(screen,arc);
 
 % Get points from response, show feedback during train
-[ point_totes ] = feedback( params, responseAngle,iBlock,screen);
+[ point_totes ] = feedback( params, responseAngle,iBlock,screen,bar);
 
 WaitSecs(screen.betweentrials);
 end
