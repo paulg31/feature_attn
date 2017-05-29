@@ -1,4 +1,4 @@
-function [point_totes,mouse_start,responseAngle] = runtrial( screen, design,iBlock,params)
+function [point_totes,mouse_start,responseAngle,diff] = runtrial( screen, design,iBlock,params)
 
 % Draw fixation cross
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0); 
@@ -38,7 +38,7 @@ WaitSecs(screen.stim_duration);
 [responseAngle, mouse_start,bar] = mousetracking(screen,arc);
 
 % Get points from response, show feedback during train
-[ point_totes ] = feedback( params, responseAngle,iBlock,screen,bar);
+[ point_totes,diff] = feedback( params, responseAngle,iBlock,screen,bar);
 
 WaitSecs(screen.betweentrials);
 end

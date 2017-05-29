@@ -101,7 +101,7 @@ screen.black         = BlackIndex(screenNumber);
 screen.bgcolor       = screen.white / 2;
 screen.lesswhite     = screen.white / .1;
 screen.darkgray      = 10/255;
-screen.fixationdur   = 0.5;
+screen.fixationdur   = 0.2;
 screen.ISI           = 0.5;     % Inter-stimulus-interval
 screen.betweentrials = 0.3;
 screen.feedback_time = 1.1;
@@ -140,7 +140,7 @@ WaitSecs(.5);
 % Begin Block
 for iBlock = blockStart:numel(design.types)
     
-    data.fields{iBlock}         = {'trial','response','points','trial mean','pre cue', 'post cue'};
+    data.fields{iBlock}         = {'trial','response','trial mean','points','error','pre cue', 'post cue'};
     design.fields{iBlock}       = {'trial', 'mouse start x','mouse start y', ' width', 'contrast'}; 
     
     % Prepare empty data matrix
@@ -179,7 +179,7 @@ for iBlock = blockStart:numel(design.types)
     
     % Trials
     for trial = trialStart:design.numtrials(iBlock)
-        params.trial_mean = rand(1)*180;
+        params.trial_mean = 3;%rand(1)*180;
 
              % Cue appearances
              x = rand;
@@ -197,11 +197,11 @@ for iBlock = blockStart:numel(design.types)
              end
 
         % Pass info to runtrial
-        [point_totes,mouse_start,responseAngle] = runtrial(screen,design,iBlock,params);
+        [point_totes,mouse_start,responseAngle,diff] = runtrial(screen,design,iBlock,params);
 
         % save into mat
         data.mat{iBlock}(trial,:) = [ ...
-            trial, responseAngle, point_totes,params.trial_mean, params.pre_cue, params.post_cue   ...
+            trial, responseAngle, params.trial_mean, point_totes, diff, params.pre_cue, params.post_cue   ...
         ];
         
         design.mat{iBlock}(trial,:) = [...
@@ -217,7 +217,7 @@ for iBlock = blockStart:numel(design.types)
     save(outputFile, 'data', 'design','trial','iBlock'); 
     
     % Show block feedback
-    total = sum(data.mat{iBlock}(:,3),1);                   % Total score
+    total = sum(data.mat{iBlock}(:,4),1);                   % Total score
     completion = sum(design.numtrials(1:iBlock))/sum(design.numtrials);   % Completed
     displayscore(total,completion,screen);
     trialStart = 1;    
