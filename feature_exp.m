@@ -108,7 +108,7 @@ screen.feedback_time = 1.1;
 screen.sound_volume  = 2;
 screen.jitter        = 0.1;     % 10% random jitter of durations
 screen.gabor_drift   = 0;       % Gabor drift speed (0=static)
-screen.stim_duration = .5;      % Stimulus presentation time     
+screen.stim_duration = .2;      % Stimulus presentation time     
 screen.circle_size   = 2*design.radii(3);   % Size of circle cue(should be same as arc radius*2)
 screen.circle_thickness   = .2;  % Thickness of circle cue in degrees(can be changed)
 
@@ -119,7 +119,7 @@ screen.stimwidthmultiplier = 1.5352;
 [screen.window, screen.windowRect] = PsychImaging('OpenWindow', screenNumber, screen.bgcolor,...
                             [], 32, 2,[], [],  kPsychNeed32BPCFloat);
 % Get the size of the on screen window in pixels
-[~, screen.Ypixels] = Screen('WindowSize', screen.window);
+[screen.Xpixels, screen.Ypixels] = Screen('WindowSize', screen.window);
 
 % Centers
 [screen.xCenter, screen.yCenter] = RectCenter(screen.windowRect);
@@ -140,7 +140,7 @@ WaitSecs(.5);
 % Begin Block
 for iBlock = blockStart:numel(design.types)
     
-    data.fields{iBlock}         = {'trial','response','trial mean','points','error','pre cue', 'post cue'};
+    data.fields{iBlock}         = {'trial','response','trial mean','points','error','arc mean','pre cue', 'post cue'};
     design.fields{iBlock}       = {'trial', 'mouse start x','mouse start y', ' width', 'contrast'}; 
     
     % Prepare empty data matrix
@@ -197,11 +197,11 @@ for iBlock = blockStart:numel(design.types)
              end
 
         % Pass info to runtrial
-        [point_totes,mouse_start,responseAngle,diff] = runtrial(screen,design,iBlock,params);
+        [point_totes,mouse_start,responseAngle,diff,arc_mean] = runtrial(screen,design,iBlock,params);
 
         % save into mat
         data.mat{iBlock}(trial,:) = [ ...
-            trial, responseAngle, params.trial_mean, point_totes, diff, params.pre_cue, params.post_cue   ...
+            trial, responseAngle, params.trial_mean, point_totes, diff,arc_mean, params.pre_cue, params.post_cue   ...
         ];
         
         design.mat{iBlock}(trial,:) = [...

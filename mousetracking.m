@@ -19,8 +19,8 @@ while ~exitLoop
     
     % Flip Mouse to other side if reaches 2nd closest pixel
     if mx < 2
-        SetMouse(1598,screen.yCenter,screen.window);
-    elseif mx > 1598
+        SetMouse(screen.Xpixels-2,screen.yCenter,screen.window);
+    elseif mx > screen.Xpixels-2
         SetMouse(2,screen.yCenter,screen.window);
     end
     

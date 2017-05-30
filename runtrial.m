@@ -1,4 +1,4 @@
-function [point_totes,mouse_start,responseAngle,diff] = runtrial( screen, design,iBlock,params)
+function [point_totes,mouse_start,responseAngle,diff,arc_mean] = runtrial( screen, design,iBlock,params)
 
 % Draw fixation cross
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0); 
@@ -11,7 +11,7 @@ fixDuration = screen.fixationdur*(1+screen.jitter*(2*rand()-1));
 WaitSecs(fixDuration);
 
 % Get arc info
-arc = drawarc( screen,design,params );
+[arc,arc_mean] = drawarc( screen,design,params );
 
 % Draw the cues: main arc, gray cover, main arc on opp side, cover on opp
 % side

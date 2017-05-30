@@ -1,4 +1,4 @@
-function [arc] = drawarc(screen,design,params)
+function [arc, arc_mean] = drawarc(screen,design,params)
 
 % Circle Cue diameter and thickness in pixels
 diam = screen.circle_size*screen.pxPerDeg;
