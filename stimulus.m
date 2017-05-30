@@ -2,8 +2,8 @@ function stimulus(screen,gabor,design,params)
 
 % Stim params
 contrast        = params.contrast;
-stimdevmean     = design.thetamean(1);
-stimdevdev      = design.sigmas(3);
+else_mean     = design.thetamean(1);
+gabor_sigma      = design.sigmas(3);
 jitter_std      = design.sigmas(2);
 
 % Radii for how far from center to draw gabors
@@ -58,14 +58,12 @@ for i = 1:nGabors
 end
 
 % Gabor orientations 
-gabmean  = params.trial_mean;
+target_mean  = params.trial_mean;
 gaborAngles = zeros(1,nGabors);
 gaborAnglesout = zeros(1,nGaborsout);
 for ii = 1:nGabors
-    stimdev = randn*stimdevdev + stimdevmean;
-    stimdev2 = randn*stimdevdev + stimdevmean;
-    gaborAngles(ii) = gabmean + stimdev;
-    gaborAnglesout(ii) = gabmean + stimdev2;
+    gaborAngles(ii) = randn*gabor_sigma + target_mean;
+    gaborAnglesout(ii) = randn*gabor_sigma + target_mean;
 end
 
 % Contrast
