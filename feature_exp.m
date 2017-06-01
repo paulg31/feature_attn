@@ -14,10 +14,10 @@ if nargin < 3 || isempty(reload)
 end
 
 % Exp Design
-design.types        = [1 2 3 4 5];
-design.contrasts    = [.05 .2 1];        % (low, high, train)
+design.types        = [1 1 3 4 5];
+design.contrasts    = [.05 .2 .15];        % (low, high, train)
 design.width        = [2.5 5 3];        % distribution width types, narrow, wide, train
-design.trial_nums   = [3 3 3 3 3];      % trials per block at each index
+design.trial_nums   = [3 3 1 1 1];      % trials per block at each index
 design.radii        = [4 6 8];          % [in out arc] radii in visual angle
 design.sigmas       = [NaN 6.5 8];    % [arc sigma. gabor position sigma. gabor orientation sigma]
 design.thetamean    = 5.5;              % mean of noise for orientation of target mean
@@ -179,7 +179,7 @@ for iBlock = blockStart:numel(design.types)
     
     % Trials
     for trial = trialStart:design.numtrials(iBlock)
-        params.trial_mean = 3;%rand(1)*180;
+        params.trial_mean = rand(1)*180;
 
              % Cue appearances
              x = rand;

@@ -2,7 +2,6 @@ function stimulus(screen,gabor,design,params)
 
 % Stim params
 contrast        = params.contrast;
-else_mean     = design.thetamean(1);
 gabor_sigma      = design.sigmas(3);
 jitter_std      = design.sigmas(2);
 
@@ -57,14 +56,42 @@ for i = 1:nGabors
     allRectsout(:, i) = CenterRectOnPointd(baseRect, xPosout(i), yPosout(i));
 end
 
+
+
 % Gabor orientations 
 target_mean  = params.trial_mean;
-gaborAngles = zeros(1,nGabors);
-gaborAnglesout = zeros(1,nGaborsout);
+jitteredin = zeros(1,nGabors);
+jitteredout = zeros(1,nGaborsout);
+
+% Jitter gabors around 0
 for ii = 1:nGabors
-    gaborAngles(ii) = randn*gabor_sigma + target_mean;
-    gaborAnglesout(ii) = randn*gabor_sigma + target_mean;
+    jitteredin(ii) = randn*gabor_sigma;
+    jitteredout(ii) = randn*gabor_sigma;
 end
+
+% Set mean of jittered gabors to 0
+mean_fixin = mean(jitteredin);
+mean_fixout = mean(jitteredout);
+jitteredin = jitteredin - mean_fixin;
+jitteredout = jitteredout - mean_fixout;
+
+% Add target_mean so that target_mean = actual mean
+gaborAngles = jitteredin + target_mean;
+gaborAnglesout = jitteredout + target_mean;
+
+% Check if any angles are negative and flip them around
+for ii = 1:numel(gaborAngles)
+    if gaborAngles(ii) < 0
+        gaborAngles(ii) = 180 + gaborAngles(ii);
+    end
+    if gaborAnglesout(ii) < 0
+        gaborAnglesout(ii) = 180 + gaborAnglesout(ii);
+    end
+end
+% Check
+% gaborAngles
+% gaborAnglesout
+% target_mean
 
 % Contrast
 gabor.propertiesMat(4) = contrast;

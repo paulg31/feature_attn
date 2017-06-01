@@ -31,7 +31,7 @@ gabor = stim_info(screen);
 % Draw Gabors
 stimulus(screen, gabor,design,params);
 
-% KbWait;
+%KbWait;
 WaitSecs(screen.stim_duration);
 
 % Begin response
