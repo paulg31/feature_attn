@@ -1,4 +1,4 @@
-function [point_totes,mouse_start,responseAngle,diff,arc_mean] = runtrial( screen, design,iBlock,params)
+function [point_totes,mouse_start,responseAngle,resp_error,arc_mean] = runtrial( screen, design,iBlock,params)
 
 % Draw fixation cross
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0); 
@@ -25,11 +25,22 @@ Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
 Screen('Flip', screen.window);
 WaitSecs(fixDuration);
 
-% Get gabor params
-gabor = stim_info(screen);
+switch params.stim_type
+    case 'gabor'
+        % Get gabor params
+        params.contast = design.contrasts(params.index);    
+        stim = stim_info(screen,params);
+        % Draw Gabors
+        % stimulus(screen, gabor,design,params);
+        drawgabor(screen,stim,params);
+        
+    case 'ellipse'
+        % Get gabor params
+        params.roundness = design.roundness(params.index);
+        stim = stim_info(screen,params);
+        drawellipse(screen,stim,params);
+end
 
-% Draw Gabors
-stimulus(screen, gabor,design,params);
 
 %KbWait;
 WaitSecs(screen.stim_duration);
@@ -38,7 +49,7 @@ WaitSecs(screen.stim_duration);
 [responseAngle, mouse_start,bar] = mousetracking(screen,arc);
 
 % Get points from response, show feedback during train
-[ point_totes,diff] = feedback( params, responseAngle,iBlock,screen,bar);
+[ point_totes,resp_error] = feedback( params, responseAngle,iBlock,screen,bar,design);
 
 WaitSecs(screen.betweentrials);
 end

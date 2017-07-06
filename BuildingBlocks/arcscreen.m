@@ -17,7 +17,7 @@ white = WhiteIndex(screenNumber);
 black = BlackIndex(screenNumber);
 
 % Open an on screen window
-[window, windowRect] = PsychImaging('OpenWindow', screenNumber, black);
+[window, windowRect] = PsychImaging('OpenWindow', screenNumber, white/2);
 
 % Get the size of the on screen window
 [screenXpixels, screenYpixels] = Screen('WindowSize', window);
@@ -33,14 +33,12 @@ waitframes = 1;
 dur = 1;
 radius = 340;
 step = pi/180;
-baseRect = [0 0 680 680];
-baseRect2 = [0 0 670 670];
+baseRect = [0 0 75 150];
 circlerect = CenterRectOnPointd(baseRect, xCenter, yCenter);
-circlerect2 = CenterRectOnPointd(baseRect2,xCenter, yCenter);
 type2draw = 'FillOval';
 
+
 Screen(type2draw, window, white, circlerect);
-Screen(type2draw, window, black, circlerect2);
 
 % Flip to the screen
 vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);

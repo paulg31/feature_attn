@@ -2,7 +2,7 @@ function stimulus(screen,gabor,design,params)
 
 % Stim params
 contrast        = params.contrast;
-gabor_sigma      = design.sigmas(3);
+gabor_sigma     = design.sigmas(3);
 jitter_std      = design.sigmas(2);
 
 % Radii for how far from center to draw gabors
@@ -12,13 +12,15 @@ radius_inner    = design.radii(1)*screen.pxPerDeg;
 % Set the steps for gabor positions around circle
 step            = pi/4;
 shift           = pi/8;
-span            = 0:step:2*pi-step;
+start_pos       = rand*pi;
+end_pos         = (2*pi)+start_pos-step;
+span            = start_pos:step:end_pos;
 xPosout = zeros(1,numel(span));
 yPosout = zeros(1,numel(span));
 xPos    = zeros(1,numel(span));
 yPos    = zeros(1,numel(span));
 
-% Set the xPosition and yPosition for the Gabros
+% Set the xPosition and yPosition for the Gabors
 count = 1;
 for val = span
     % Jittered radius of each gabor
@@ -55,7 +57,6 @@ for i = 1:nGabors
     allRects(:, i) = CenterRectOnPointd(baseRect, xPos(i), yPos(i));
     allRectsout(:, i) = CenterRectOnPointd(baseRect, xPosout(i), yPosout(i));
 end
-
 
 
 % Gabor orientations 
@@ -103,9 +104,9 @@ Screen('Flip', screen.window);
 Screen('DrawTextures', screen.window, gabor.tex, [], allRects, gaborAngles-90,...
     [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
-% Batch draw all of the Gabors to screen
-Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout-90,...
-    [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
+% % Batch draw all of the Gabors to screen
+% Screen('DrawTextures', screen.window, gabor.tex, [], allRectsout, gaborAnglesout-90,...
+%     [], [], [], [], kPsychDontDoRotation, gabor.propertiesMat');
 
 % Draw the fixation point
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0);

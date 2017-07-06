@@ -28,7 +28,7 @@ newxop    = zeros(1,numel(spans));
 newyop    = zeros(1,numel(spans));
 
 for angle  = spans
-    dist_height   = 10*normpdf(angle,arc_mean,sigma)+radius;
+    dist_height   = 30*normpdf(angle,arc_mean,sigma)+radius;
 
     % Arc cover points
     xval(count)   = cos(angle)*radius +screen.xCenter;

@@ -1,4 +1,4 @@
-function [ point_totes,diff] = feedback( params, responseAngle,iBlock,screen,bar)
+function [ point_totes,resp_error] = feedback( params, responseAngle,iBlock,screen,bar,design)
 
     sigma       = 10;%some value?
     %trials = [0 180 -180];
@@ -8,13 +8,13 @@ function [ point_totes,diff] = feedback( params, responseAngle,iBlock,screen,bar
         expo        = ((error)^2)/(2*sigma^2);
         points_prob = exp(-expo);
         point_totes = round(10*points_prob);
-        diff = vals(find(abs(vals)==error));
+        resp_error = vals(find(abs(vals)==error));
     %end
     %point_totes = max(point_poss);
     %responseAngle = responseAngle - trials(find(point_poss==point_totes));
     
     % Display feedback for train block
-    if iBlock == 1
+    if design.types(iBlock) == 1 || design.types(iBlock) == 3
         
         % Bar Info
         bar.texturerect_true = ones(5,300).*screen.black;

@@ -1,26 +1,39 @@
-function gabor = stim_info(screen)
+function stim = stim_info(screen,params)
 
-gabor.display_length        = screen.stim_duration;
-gabor.drift_speed           = screen.gabor_drift;
-gabor.numCycles             = (2.15 / screen.stimwidthmultiplier);
-gabor.degPerSec             = 360 * gabor.drift_speed; %lower multiple slower speed
-gabor.degPerFrameGabors     = gabor.degPerSec * screen.ifi;
-gabor.ifi                   = screen.ifi;    %inter-frame interval (1/Hz)
-gabor.center                = 0.5*screen.windowRect(3:4);
-gabor.phaseLine             = 0;
-gabor.backgroundOffset      = [0.5 0.5 0.5 0.0];
-gabor.disableNorm           = 1;
-gabor.preContrastMultiplier = 0.5;
-gabor.sigma                 = (0.27 * screen.stimwidthmultiplier) * screen.pxPerDeg; % ~ 1.2 visual degrees converted to pixels
-gabor.freq                  = gabor.numCycles ./ screen.pxPerDeg;
-gabor.aspectRatio           = 1.0;
-gabor.grateAlphaMaskSize    = round(6*gabor.sigma);
+switch params.stim_type
+    case 'gabor'
 
-% Build a procedural gabor texture 
-gabor.tex = CreateProceduralGabor(screen.window, gabor.grateAlphaMaskSize, gabor.grateAlphaMaskSize, [],...
-    gabor.backgroundOffset, gabor.disableNorm, gabor.preContrastMultiplier);
+        stim.gabor.display_length        = screen.stim_duration;
+        stim.gabor.drift_speed           = screen.gabor_drift;
+        stim.gabor.numCycles             = (.8 / screen.stimwidthmultiplier);
+        stim.gabor.degPerSec             = 360 * stim.gabor.drift_speed; %lower multiple slower speed
+        stim.gabor.degPerFrameGabors     = stim.gabor.degPerSec * screen.ifi;
+        stim.gabor.ifi                   = screen.ifi;    %inter-frame interval (1/Hz)
+        stim.gabor.center                = 0.5*screen.windowRect(3:4);
+        stim.gabor.phaseLine             = 0;
+        stim.gabor.backgroundOffset      = [0.5 0.5 0.5 0.0];
+        stim.gabor.disableNorm           = 1;
+        stim.gabor.preContrastMultiplier = 0.5;
+        stim.gabor.sigma                 = (.8 * screen.stimwidthmultiplier) * screen.pxPerDeg; % ~ 1.2 visual degrees converted to pixels
+        stim.gabor.freq                  = stim.gabor.numCycles ./ screen.pxPerDeg;
+        stim.gabor.aspectRatio           = 1.0;
+        stim.gabor.grateAlphaMaskSize    = round(6*stim.gabor.sigma);
 
-% Store 'DrawTexture' info for gabor in matrix
-gabor.propertiesMat = [gabor.phaseLine, gabor.freq, gabor.sigma, NaN, gabor.aspectRatio, 0, 0, 0];
+        % Build a procedural gabor texture 
+        stim.gabor.tex = CreateProceduralGabor(screen.window, stim.gabor.grateAlphaMaskSize, stim.gabor.grateAlphaMaskSize, [],...
+            stim.gabor.backgroundOffset, stim.gabor.disableNorm, stim.gabor.preContrastMultiplier);
+
+        % Store 'DrawTexture' info for gabor in matrix
+        stim.gabor.propertiesMat = [stim.gabor.phaseLine, stim.gabor.freq, stim.gabor.sigma, NaN, stim.gabor.aspectRatio, 0, 0, 0];
+
+    case 'ellipse'
+        % Ellipse parameters
+        stim.ellipse.AreaDegSq = 2; % ellipse area in degrees squared??
+        stim.ellipse.AreaPx = screen.pxPerDeg^2 * stim.ellipse.AreaDegSq; % ellipse area in number of pixels
+        stim.ellipse.Color = 0;
+        stim.ellipse.attention_stim_spacing = 5; % ran as 7 in pilot 1 % for multiple stimuli, distance from center (ie radius), in degrees
+        stim.ellipse.stim_dist = round(stim.ellipse.attention_stim_spacing * screen.pxPerDeg); % distance from center in pixels
+        stim.ellipse.cur_sigma = params.roundness; %linspace(.15,.8,6)
+end
 
 end
