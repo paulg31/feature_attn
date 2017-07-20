@@ -3,13 +3,13 @@ function [responseAngle, mouse_start, bar] = mousetracking(screen,arc)
 bar.texturerect = ones(5,300).*screen.lesswhite;
 bar.recttexture = Screen('MakeTexture',screen.window,bar.texturerect);
 
-% Set mouse
-xstart      = rand(1)*screen.windowRect(3);
-ystart      = rand(1)*screen.windowRect(4);
+% Set mouse at random position
+xstart      = rand*screen.windowRect(3);
+ystart      = rand*screen.windowRect(4);
 mouse_start = [xstart,ystart];
 SetMouse(xstart,ystart,screen.window);
 
-RestrictKeysForKbCheck(84); %T for response, arbitrary
+RestrictKeysForKbCheck(84); %T for response, arbitrary, can be changed
 
 exitLoop = 0; 
 
@@ -30,12 +30,11 @@ while ~exitLoop
     theta   = mod(Xdiff/L,1)*pi;
     actual  = pi-theta;
 
-    % Draw postcue only sometimes
-
-        Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.poly.post);
-        Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.cover.post);
-        Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.polyopp.post);
-        Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
+    % Draw postcue
+    Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.poly.post);
+    Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.cover.post);
+    Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.polyopp.post);
+    Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
     
     Screen('DrawTexture', screen.window, bar.recttexture, [], [], theta*180/pi);
     Screen('Flip', screen.window,screen.ifi);
@@ -47,6 +46,5 @@ while ~exitLoop
     end
     
 end
-
 RestrictKeysForKbCheck([])
 end

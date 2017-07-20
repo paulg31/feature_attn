@@ -14,15 +14,16 @@ if nargin < 3 || isempty(reload)
 end
 
 % Exp Design
-design.types        = [1 2 3 5 4 6 3 5 6 4];
+design.types        = [1 2 3 4 5 6];
 design.contrasts    = [.004 .008 .017 .033 .067 .135]; % Currently unused
 design.roundness    = [20 5]; % Larger value, more circular
 design.width        = [1 1];        % distribution width types, narrow, wide, train
-design.trial_nums   = [75 75 75 75 75 75];      % trials per block at each index
+design.trial_nums   = [75 150 150 150 150 150];      % trials per block at each index
 design.radii        = [6 6 8];          % [in out arc] radii in visual angle
 design.sigmas       = [NaN 6.5 0];    % [arc sigma. gabor position sigma. gabor orientation sigma]
 design.thetamean    = 5.5;              % mean of noise for orientation of target mean
 design.adapt.contrast = .04;            % Unused
+design.med2sd       = 1.48;             % conversion for med to sd
 target_cue          = 1;                % arc
 null_cue            = 2;                % 0 for circle, 2 for nothing
 num_reps            = 2;                
@@ -62,25 +63,25 @@ else
     trialStart = 1;
     blockStart = 1;
     
-%     % Block Order
-%     perm_order = design.types(3:numel(design.types));
-%     design.types = [1 2];
-%     stop = 0;
-%     while stop == 0
-%         % Shuffle test blocks
-%         for n = 1:num_reps
-%             perm = perm_order(randperm(numel(perm_order)));
-%             design.types = [design.types perm];
-%         end
-% 
-%         % Make sure no consecutive blocks
-%         if design.types(6) == design.types(7)
-%             stop = 0;
-%             design.types = [1 2];
-%         else
-%             stop = 1;
-%         end
-%     end
+    % Block Order
+    perm_order = design.types(3:numel(design.types));
+    design.types = [1 2];
+    stop = 0;
+    while stop == 0
+        % Shuffle test blocks
+        for n = 1:num_reps
+            perm = perm_order(randperm(numel(perm_order)));
+            design.types = [design.types perm];
+        end
+
+        % Make sure no consecutive blocks
+        if design.types(6) == design.types(7)
+            stop = 0;
+            design.types = [1 2];
+        else
+            stop = 1;
+        end
+    end
     
     % Empty data mats for each block and organize trials
     for iBlock = 1:numel(design.types)
@@ -105,16 +106,20 @@ screen.black         = BlackIndex(screenNumber);
 screen.bgcolor       = screen.white / 2;
 screen.lesswhite     = screen.white / .1;
 screen.darkgray      = 10/255;
-screen.fixationdur   = 0.5;
-screen.ISI           = 0.5;     % Inter-stimulus-interval
-screen.betweentrials = 0.3;
-screen.feedback_time = 1.1;
 screen.sound_volume  = 2;
 screen.jitter        = 0.1;     % 10% random jitter of durations
-screen.gabor_drift   = 0;       % Gabor drift speed (0=static)
-screen.stim_duration = .05;      % Stimulus presentation time     
+screen.gabor_drift   = 0;       % Gabor drift speed (0=static)     
 screen.circle_size   = 2*design.radii(3);   % Size of circle cue(should be same as arc radius*2)
 screen.circle_thickness   = .2;  % Thickness of circle cue in degrees(can be changed)
+
+% Timings
+screen.stim_duration = 0.05;    % Stimulus presentation time
+screen.fixationdur   = 0.5;     % fixation duration
+screen.ISI           = 0.5;     % Inter-stimulus-interval
+screen.betweentrials = 0.3;     % Time between trials
+screen.feedback_time = 1.1;     % Feedback Presentation Time
+screen.pre_stim      = 0.3;     % Time between pre cue and stim
+screen.stim_post     = 0.3;     % Time between stim and post cue
 
 % Correction to stimulus width/period since previously reported dva were off
 screen.stimwidthmultiplier = 1.5352;
@@ -160,39 +165,38 @@ for iBlock = blockStart:numel(design.types)
             data.block_type{iBlock}     = 'T';
             
         case 2 % Adapt Contrast
-            design.adapt.target_error = median(abs(data.mat{1}(:,5))); % Target error for adapt
-            params.width = design.width(3);
+            design.adapt.target_error = design.med2sd*median(abs(data.mat{1}(:,5))); % Target error for adapt
+            params.width = design.width(2);
             params.index = 1;
             data.block_type{iBlock} = 'A';
 
-        case 3% Low-Narrow
-            design.width(1) = design.adapt.target_error; % Narrow Cue corresponds to low roudness error
-            design.width(2) = 2*design.adapt.target_error; % Wide cue corresponds to 2*low round error
+        case 3% High-Narrow
             params.width = design.width(1);
             params.index = 1;
-            data.block_type{iBlock}     = 'LN';
-
-        case 4% Low-Wide
-            params.width = design.width(2);
-            params.index = 1;
-            data.block_type{iBlock}     = 'LW';
-
-        case 5% High-Narrow
-            params.width = design.width(1);
-            params.index = 2;
             data.block_type{iBlock}     = 'HN';
 
-        case 6% High-Wide
+        case 4% High-Wide
+            params.width = design.width(2);
+            params.index = 1;
+            data.block_type{iBlock}     = 'HW';
+
+        case 5% Low-Narrow
+            params.width = design.width(1);
+            params.index = 2;
+            data.block_type{iBlock}     = 'LN';
+
+        case 6% Low-Wide
             params.width = design.width(2);
             params.index = 2;
-            data.block_type{iBlock}     = 'HW';
+            data.block_type{iBlock}     = 'LW';
 
     end
     
     % Adaptive block, no cues, keeps going
     if iBlock == 2
         adapt = 1;
-        trial = 1;
+        trial = 1;%needed??
+        params.stim_type = 'ellipse';
         while adapt == 1
             params.trial_mean = rand(1)*180;
             params.pre_cue = null_cue;
@@ -219,9 +223,11 @@ for iBlock = blockStart:numel(design.types)
         
         % Save data at the end of each trial
         save(outputFile, 'data', 'design','trial','iBlock');
+        
+        % Go through adaptive, update roundness
         [params, design,adapt] = adaptive(resp_error,design,params,trial,data);
-        trial = trial + 1;
-            
+        
+        trial = trial + 1;            
         end
     else
     
@@ -234,25 +240,22 @@ for iBlock = blockStart:numel(design.types)
             params.pre_cue = null_cue;
             params.post_cue = null_cue;
         else
-            params.pre_cue = target_cue;
-            params.post_cue = target_cue;
-        end
         
-             % Cue appearances, change for iBlock = 1, and for straight cue runs***
-             % *CHANGE FOR THE ADAPTIVE BLOCK!!!!!
+             % Cue appearances, change for iBlock = 1
              x = rand;
              if x <.4 % arc arc
                 params.pre_cue = target_cue;
                 params.post_cue = target_cue;
 
              elseif x <.8 && x >= .4 % none arc
-                params.pre_cue = target_cue; 
+                params.pre_cue = null_cue; 
                 params.post_cue = target_cue;
                 
              else % none none
-                params.pre_cue = target_cue;
-                params.post_cue = target_cue;
+                params.pre_cue = null_cue;
+                params.post_cue = null_cue;
              end
+        end
 
         % determine what to save
         switch params.stim_type

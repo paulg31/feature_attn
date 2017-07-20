@@ -1,0 +1,21 @@
+﻿general cleanup 
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch master
+# Your branch is up-to-date with 'origin/master'.
+#
+# Changes to be committed:
+#	deleted:    BuildingBlocks/ellipse.asv
+#	modified:   adaptive.m
+#	modified:   crossinfo.m
+#	modified:   drawarc.m
+#	modified:   drawellipse.m
+#	modified:   drawgabor.m
+#	modified:   feature_exp.m
+#	modified:   feedback.m
+#	modified:   mousetracking.m
+#	modified:   runtrial.m
+#	modified:   stim_info.m
+#	deleted:    stimulus.m
+#
+

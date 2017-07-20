@@ -1,5 +1,6 @@
 function drawgabor(screen,stim,params)
-%draws the stimulus for a period of time from info in gaborinfo
+% UNUSED -- Most Likely Does Not Work Anymore
+% draws the stimulus for a period of time from info in gaborinfo
 
 propertiesMat    = stim.gabor.propertiesMat;
 propertiesMat(4) = params.contrast;    % Current Gabor contrast

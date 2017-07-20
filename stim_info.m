@@ -28,12 +28,12 @@ switch params.stim_type
 
     case 'ellipse'
         % Ellipse parameters
-        stim.ellipse.AreaDegSq = 2; % ellipse area in degrees squared??
-        stim.ellipse.AreaPx = screen.pxPerDeg^2 * stim.ellipse.AreaDegSq; % ellipse area in number of pixels
-        stim.ellipse.Color = 0;
+        stim.ellipse.AreaDegSq  = 2; % ellipse area in degrees squared??
+        stim.ellipse.AreaPx     = screen.pxPerDeg^2 * stim.ellipse.AreaDegSq; % ellipse area in number of pixels
+        stim.ellipse.Color      = 0;
         stim.ellipse.attention_stim_spacing = 5; % ran as 7 in pilot 1 % for multiple stimuli, distance from center (ie radius), in degrees
-        stim.ellipse.stim_dist = round(stim.ellipse.attention_stim_spacing * screen.pxPerDeg); % distance from center in pixels
-        stim.ellipse.cur_sigma = params.roundness; %linspace(.15,.8,6)
+        stim.ellipse.stim_dist  = round(stim.ellipse.attention_stim_spacing * screen.pxPerDeg); % distance from center in pixels
+        stim.ellipse.cur_sigma  = params.roundness; %linspace(.15,.8,6)
 end
 
 end
