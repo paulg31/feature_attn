@@ -18,24 +18,32 @@ if nargin < 4 || isempty(control)
 end
 
 % Exp Design
-design.types        = [1 2 3 4 5 6];                    % Blocks
+design.types        = [1 5 6];                    % Blocks
 design.contrasts    = [.004 .008 .017 .033 .067 .135];  % Used  only for Gabor stimulus
-design.roundness    = [20 5];                           % Larger value, more circular
+design.roundness    = [20 10];                           % Larger value, more circular
 design.width        = [1 1];                         % distribution width types, narrow, wide
-design.trial_nums   = [75 75 150 150 150 150];       % trials per block at each index
+% design.trial_nums   = [75 150 150];       % trials per block at each index
 design.arc_dist     = 7;                % arc distance from center in dva
 design.thetamean    = 5.5;              % mean of noise for orientation of target mean
 design.med2sd       = 1.48;             % conversion for median to sd
 target_cue          = 1;                % arc
 null_cue            = 2;                % 0 for circle, 2 for nothing
 design.wide_ratio   = sqrt(3);          % multiplier for wide cue
-% num_reps            = 2;                % number of times to repeat blocks
+design.cue_ratio    = .4;               % ratio for both the pre+post and post conditions
+num_reps            = 2;                % number of times to repeat blocks
 
 % Folders
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'results' filesep()];
 outputFile          = [resultsFolder,'Subj',subjId,'_Session'...
-                            num2str(sessionNo) '_data.mat'];            
+                            num2str(sessionNo) '_data.mat']; 
+                        
+% Sessions
+if sessionNo == 1
+    design.trial_nums   = [2 2 2 2 2];
+else
+    design.trial_nums   = [3 3 3 3];
+end
                         
 % Create results folder if it does not exist already
 if ~exist([currentPath filesep() 'results'],'dir')
@@ -67,21 +75,34 @@ else
     blockStart = 1;
     
     % Block Order
-    perm_order = design.types(3:numel(design.types));
-    design.types = [1 2];
-%     stop = 0;
-%     while stop == 0
+    perm_order = design.types(2:numel(design.types));
+    design.types = [1];
+
         % Shuffle test blocks
         if sessionNo == 1
-%         for n = 1:num_reps
-            perm = perm_order(randperm(numel(perm_order)));
-            design.types = [design.types perm];
-%         end
+            redo = 1;
+            while redo == 1
+                perm = perm_order(randperm(numel(perm_order)));
+                perm2 = perm_order(randperm(numel(perm_order)));
+                if perm(2)~= perm2(1)
+                    redo = 0;
+                end
+            end
+                design.types = [design.types perm perm2];
         else
             prev_File          = [resultsFolder,'Subj',subjId,'_Session'...
                             num2str(sessionNo-1) '_data.mat'];
             load(prev_File)
-            design.types = perm_order(randperm(numel(perm_order)));
+            redo = 1;
+            while redo == 1
+                perm = perm_order(randperm(numel(perm_order)));
+                perm2 = perm_order(randperm(numel(perm_order)));
+                if perm(2)~= perm2(1)
+                    redo = 0;
+                end
+            end
+            design.types = [perm perm2];
+            %design.types = perm_order(randperm(numel(perm_order)));
             sessionNo = sessionNo +1;
             design.mat = [];
             design.numtrials = [];
@@ -90,21 +111,13 @@ else
             data.fields = [];
             data.block_type = [];
         end
-
-%         % Make sure no consecutive blocks
-%         if design.types(6) == design.types(7)
-%             stop = 0;
-%             design.types = [1 2];
-%         else
-%             stop = 1;
-%         end
-%     end
     
     % Empty data mats for each block and organize trials
     for iBlock = 1:numel(design.types)
             data.mat{iBlock} = [];
             design.mat{iBlock}  = [];
-            design.numtrials(iBlock) = design.trial_nums(design.types(iBlock));
+            design.numtrials(iBlock) = design.trial_nums(iBlock);
+            design.cue_order{iBlock} = counterbalance(design,iBlock);
     end   
 end
 
@@ -170,6 +183,7 @@ ring = grid_info(screen, design,control);
 
 % Begin Block
 for iBlock = blockStart:numel(design.types)
+    
     block_start = GetSecs;
     
     showinstructions(1,screen, iBlock)
@@ -277,17 +291,16 @@ for iBlock = blockStart:numel(design.types)
             params.post_cue = null_cue;
         else
         
-             % Cue appearances, change for iBlock = 1
-             x = rand;
-             if x <.4 % arc arc
+             % Cue appearances
+             if design.cue_order{iBlock}(trial) == 2 % arc arc
                 params.pre_cue = target_cue;
                 params.post_cue = target_cue;
 
-             elseif x <.8 && x >= .4 % none arc
+             elseif design.cue_order{iBlock}(trial) == 1 % none arc
                 params.pre_cue = null_cue; 
                 params.post_cue = target_cue;
                 
-             else % none none
+             elseif design.cue_order{iBlock}(trial) == 0 % none none
                 params.pre_cue = null_cue;
                 params.post_cue = null_cue;
              end
@@ -326,6 +339,11 @@ for iBlock = blockStart:numel(design.types)
     exp_end = GetSecs;
     design.block_dur{iBlock} = block_end-block_start;
     design.exp_dur = exp_end-exp_start;
+    
+    if data.block_type{iBlock} == 'T';
+        design.width(1) = design.med2sd*median(abs(data.mat{1}(:,5)));
+        design.width(2) = design.wide_ratio*design.width(1);
+    end
     
     % Save data at the end of the block
     save(outputFile, 'data', 'design','trial','iBlock'); 
