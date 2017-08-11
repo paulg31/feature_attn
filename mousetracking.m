@@ -1,6 +1,6 @@
-function [responseAngle, mouse_start, bar] = mousetracking(screen,arc)
+function [responseAngle, mouse_start, bar, resp_time] = mousetracking(screen,arc,ring)
 % Bar Info
-bar.texturerect = ones(5,300).*screen.lesswhite;
+bar.texturerect = ones(screen.bar_width,screen.bar_height).*screen.lesswhite;
 bar.recttexture = Screen('MakeTexture',screen.window,bar.texturerect);
 
 % Set mouse at random position
@@ -12,7 +12,7 @@ SetMouse(xstart,ystart,screen.window);
 RestrictKeysForKbCheck(84); %T for response, arbitrary, can be changed
 
 exitLoop = 0; 
-
+tic
 while ~exitLoop
     % Get the current position of the mouse
     [mx, ~, ~] = GetMouse(screen.window);
@@ -37,12 +37,14 @@ while ~exitLoop
     Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
     
     Screen('DrawTexture', screen.window, bar.recttexture, [], [], theta*180/pi);
+    Screen('FillOval', screen.window, ring.color, ring.allRects);
     Screen('Flip', screen.window,screen.ifi);
     
     % Response, separate fucntion
     if KbCheck
         responseAngle = actual*180/pi;
         exitLoop = 1;
+        resp_time = toc;
     end
     
 end

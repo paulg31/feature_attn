@@ -1,4 +1,4 @@
-function drawellipse( screen, stim, params)
+function drawellipse( screen, stim, params,ring)
 % Code taken from Will, still unsure how it does what it does, but it draws
 % a bunch of circles on top of each other to make a smooth ellipse.
 
@@ -67,5 +67,6 @@ texture  = Screen('MakeTexture',screen.window,im);
 destRect = ceil([centerX centerY centerX centerY] + [-textureW -textureH textureW textureH] / 2);
 Screen('DrawTexture', screen.window, texture, [], destRect);
 Screen('Close', texture);
+Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
 

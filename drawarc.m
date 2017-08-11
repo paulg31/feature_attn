@@ -7,7 +7,7 @@ diam  = screen.circle_size*screen.pxPerDeg;
 thick = screen.circle_thickness*screen.pxPerDeg;
 
 % Arc Cue Information
-radius      = design.radii(3)*screen.pxPerDeg;
+radius      = design.arc_dist*screen.pxPerDeg;
 arc_sigma   = params.width;
 dev_draw    = 3; % how far out to draw arcs
 arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;

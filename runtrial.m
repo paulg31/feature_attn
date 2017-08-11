@@ -1,7 +1,16 @@
-function [point_totes,mouse_start,responseAngle,resp_error,arc_mean] = runtrial( screen, design,iBlock,params)
+function [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial( screen, design,iBlock,params,ring)
+% fixation for ~300ms
+% cue right after for 300ms
+% blank screen between pre cue and stim for 150ms
+% stim for 50ms
+% blank screen between stim and post cue for 300ms
+% post cue and response bar until response
+% feedback time for 1100ms
+% iti 300 ms
 
 % Draw fixation cross
-Screen('DrawTexture', screen.window, screen.cross, [], [], 0); 
+Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
+Screen('FillOval', screen.window, ring.color, ring.allRects);
 
 % Flip to the screen
 Screen('Flip', screen.window);
@@ -22,8 +31,15 @@ Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 
 % Cross and flip
 Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
+Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
-WaitSecs(screen.pre_stim);
+WaitSecs(screen.cue_duration);
+
+% Dot as same color as background, wait screen 
+Screen('DrawDots',screen.window,[screen.xCenter screen.yCenter],2,screen.bgcolor,[],2)
+Screen('FillOval', screen.window, ring.color, ring.allRects);
+Screen('Flip', screen.window);
+WaitSecs(screen.stim_pre);
 
 switch params.stim_type
     case 'gabor'
@@ -38,7 +54,7 @@ switch params.stim_type
         % Get gabor params
         params.roundness = design.roundness(params.index);
         stim = stim_info(screen,params);
-        drawellipse(screen,stim,params);
+        drawellipse(screen,stim,params,ring);
 end
 
 % KbWait;
@@ -46,14 +62,15 @@ WaitSecs(screen.stim_duration);
 
 % Dot as same color as background, wait screen 
 Screen('DrawDots',screen.window,[screen.xCenter screen.yCenter],2,screen.bgcolor,[],2)
+Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
 WaitSecs(screen.stim_post);
 
 % Begin response
-[responseAngle, mouse_start,bar] = mousetracking(screen,arc);
+[responseAngle, mouse_start,bar,resp_time ] = mousetracking(screen,arc,ring);
 
 % Get points from response, show feedback during train
-[ point_totes,resp_error] = feedback( params, responseAngle, screen, bar);
+[ point_totes,resp_error] = feedback( params, responseAngle, screen, bar,ring);
 
 WaitSecs(screen.betweentrials);
 end

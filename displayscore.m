@@ -1,4 +1,4 @@
-function displayscore(total,completion,screen)
+function displayscore(total,completion,screen,ring)
 
 %First Part of Message
 text = ['Score in this block: ' num2str(total)];

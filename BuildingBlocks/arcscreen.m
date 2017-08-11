@@ -12,7 +12,7 @@ screens = Screen('Screens');
 % Draw to the external screen if avaliable
 screenNumber = max(screens); 
 
-% Define black and white
+% Define black and white 
 white = WhiteIndex(screenNumber);
 black = BlackIndex(screenNumber);
 
@@ -31,14 +31,16 @@ ifi = Screen('GetFlipInterval', window);
 vbl = Screen('Flip', window);
 waitframes = 1;
 dur = 1;
-radius = 340;
+radius = 5 ;
 step = pi/180;
-baseRect = [0 0 75 150];
-circlerect = CenterRectOnPointd(baseRect, xCenter, yCenter);
+baseRect = [0 0 5 5];
+circlerect = CenterRectOnPointd(baseRect, xCenter-35, yCenter);
+circlerect2 = CenterRectOnPointd(baseRect,xCenter+35, yCenter);
 type2draw = 'FillOval';
 
-
+ 
 Screen(type2draw, window, white, circlerect);
+Screen(type2draw, window, white, circlerect2);
 
 % Flip to the screen
 vbl  = Screen('Flip', window, vbl + (waitframes - 0.5) * ifi);

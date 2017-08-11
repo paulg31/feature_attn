@@ -1,4 +1,4 @@
-function showinstructions(type,screen)
+function showinstructions(type,screen, iBlock)
 % Show instructions on screen, wait for keypress to continue
 % Need to change these to go along with experiment
 
@@ -9,14 +9,21 @@ switch type
         ypos = 0.4;
     
     case 1  % Counter-Clockwise
-        text = 'Orientation Discrimination';
-        % text = [text '\n\n\n Which target is farther counter-clockwise?'];
-        text = [text '\n\n\n\n\n Match the bar to the orientation of the stimulus'];
-        ypos = 0.25;
+        text = ['Block ' num2str(iBlock) ' starting'];
+        ypos = 0.4;
         
     case 2  % Next Block
-        text = 'New Block';
-        ypos = 0.25;
+        text = 'next';
+        ypos = 0.1;
+        
+    case 3
+        text = 'back';
+        ypos = .25;
+    case 4
+        text = 'STOP';
+        text = [text '\nPlease find the experimenter'];
+        text = [text '\nthank you'];
+        ypos = .25;
         
     otherwise
         text = [];
@@ -30,7 +37,7 @@ if ~isempty(text)
     Screen('TextSize', screen.window, screen.text_size);
     DrawFormattedText(screen.window, text,...
         'center', screen.Ypixels * ypos, screen.white);
-
+    
     % Flip to the screen
     Screen('Flip', screen.window);
 
@@ -39,6 +46,7 @@ if ~isempty(text)
 
     % Wait for key press to move on
     KbWait([],2);
+    
     Screen('Flip', screen.window);
 
     % Unrestricts Keys
