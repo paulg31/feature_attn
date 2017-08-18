@@ -19,6 +19,7 @@ switch type
     case 3
         text = 'back';
         ypos = .25;
+        
     case 4
         text = 'STOP';
         text = [text '\nPlease find the experimenter'];
@@ -27,7 +28,7 @@ switch type
         
     otherwise
         text = [];
-    
+        
 end
 
 if ~isempty(text)

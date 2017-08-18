@@ -1,4 +1,4 @@
-function feature_exp(subjId,sessionNo,reload,control)
+function feature_exp(subjId,sessionNo,reload,control,debug)
 
 if nargin < 1 || isempty(subjId) || ~ischar(subjId) || numel(subjId) ~= 3
     error('First argument is subject''s 3-letter identifier.');
@@ -17,34 +17,55 @@ if nargin < 4 || isempty(control)
     control = 0;
 end
 
+if nargin < 5 || isempty(debug)
+    debug = 0;
+end
+
 % Exp Design
-design.types        = [1 5 6];                    % Blocks
+design.types        = [1 2 5 5];                    % Blocks
 design.contrasts    = [.004 .008 .017 .033 .067 .135];  % Used  only for Gabor stimulus
-design.roundness    = [20 10];                           % Larger value, more circular
-design.width        = [1 1];                         % distribution width types, narrow, wide
-% design.trial_nums   = [75 150 150];       % trials per block at each index
-design.arc_dist     = 7;                % arc distance from center in dva
+design.roundness    = [15 15];                           % Larger value, more circular
+design.width        = [10 10];                         % distribution width types, narrow, wide
+design.arc_dist     = 5;                % arc distance from center in dva
 design.thetamean    = 5.5;              % mean of noise for orientation of target mean
 design.med2sd       = 1.48;             % conversion for median to sd
-target_cue          = 1;                % arc
-null_cue            = 2;                % 0 for circle, 2 for nothing
+design.mean_mult    = 1.25;
 design.wide_ratio   = sqrt(3);          % multiplier for wide cue
-design.cue_ratio    = .4;               % ratio for both the pre+post and post conditions
-num_reps            = 2;                % number of times to repeat blocks
+design.cue_ratio    = .25;              % ratio for both the pre+post and post conditions
+design.target_lowerbound = .75;
+design.target_upperbound = 1.25;
+design.target_SDerror = 10;
+design.adapt_type = 1;
+design.pointsigma_mult = .7;
+target_cue          = 2;                % arc
+null_cue            = 0;                % 0 for circle, 2 for nothing
+
+switch debug
+    case 0
+        design.s1_trials    = [100 152 152 152 152 152];      % Trials for the first session [180 152 152 152 152]
+        design.other_trials = [180 180 180 180];        % Trials for the rest of the sessions [180 180 180 180]
+        params.highstep_trials = 100;
+        params.start_check = 100;
+        params.mod_val = 10;
+        params.move_wind_size = 50;
+        start_width = 29;
+    case 1
+        design.s1_trials    = [10 10 4 4 4 4];      % Trials for the first session [180 152 152 152 152]
+        design.other_trials = [8 8 8 8];        % Trials for the rest of the sessions [180 180 180 180]
+        params.highstep_trials = 10;
+        params.start_check = 10;
+        params.mod_val = 5;
+        params.move_wind_size = 10;
+        start_width = 1;
+end
+
 
 % Folders
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'results' filesep()];
 outputFile          = [resultsFolder,'Subj',subjId,'_Session'...
                             num2str(sessionNo) '_data.mat']; 
-                        
-% Sessions
-if sessionNo == 1
-    design.trial_nums   = [2 2 2 2 2];
-else
-    design.trial_nums   = [3 3 3 3];
-end
-                        
+
 % Create results folder if it does not exist already
 if ~exist([currentPath filesep() 'results'],'dir')
     mkdir(currentPath,'results');
@@ -73,44 +94,19 @@ else
     % Start from scratch
     trialStart = 1;
     blockStart = 1;
-    
-    % Block Order
-    perm_order = design.types(2:numel(design.types));
-    design.types = [1];
 
-        % Shuffle test blocks
-        if sessionNo == 1
-            redo = 1;
-            while redo == 1
-                perm = perm_order(randperm(numel(perm_order)));
-                perm2 = perm_order(randperm(numel(perm_order)));
-                if perm(2)~= perm2(1)
-                    redo = 0;
-                end
-            end
-                design.types = [design.types perm perm2];
-        else
-            prev_File          = [resultsFolder,'Subj',subjId,'_Session'...
-                            num2str(sessionNo-1) '_data.mat'];
-            load(prev_File)
-            redo = 1;
-            while redo == 1
-                perm = perm_order(randperm(numel(perm_order)));
-                perm2 = perm_order(randperm(numel(perm_order)));
-                if perm(2)~= perm2(1)
-                    redo = 0;
-                end
-            end
-            design.types = [perm perm2];
-            %design.types = perm_order(randperm(numel(perm_order)));
-            sessionNo = sessionNo +1;
-            design.mat = [];
-            design.numtrials = [];
-            design.fields = [];
-            data.mat = [];
-            data.fields = [];
-            data.block_type = [];
-        end
+    % Shuffle test blocks
+    [design] = shuffle_blocks( design, sessionNo, resultsFolder, subjId);
+    
+    % Empty structs if loaded prev session
+    if sessionNo ~= 1
+        design.mat = [];
+        design.numtrials = [];
+        design.fields = [];
+        data.mat = [];
+        data.fields = [];
+        data.block_type = [];
+    end
     
     % Empty data mats for each block and organize trials
     for iBlock = 1:numel(design.types)
@@ -141,8 +137,8 @@ screen.jitter        = 0.1;     % 10% random jitter of durations
 screen.gabor_drift   = 0;       % Gabor drift speed (0=static)     
 screen.circle_size   = 2*design.arc_dist;   % Size of circle cue(should be same as arc radius*2)
 screen.circle_thickness   = .2;  % Thickness of circle cue in degrees(can be changed)
-screen.bar_width     = 5; 
-screen.bar_height    = 250;
+screen.bar_width     = 4; 
+screen.bar_height    = 180; % was 250 when cue distance was 7
 
 % Timings
 screen.stim_duration = 0.05;    % Stimulus presentation time
@@ -177,19 +173,18 @@ screen = crossinfo(screen);
 % Begin
 HideCursor;
 showinstructions(0,screen,1);
+WaitSecs(.5); % Why is this here?
 exp_start = GetSecs;
-WaitSecs(.5);
-ring = grid_info(screen, design,control);
+ring = grid_info(screen, design, control);
 
 % Begin Block
 for iBlock = blockStart:numel(design.types)
     
     block_start = GetSecs;
-    
-    showinstructions(1,screen, iBlock)
-    
-    data.fields{iBlock}         = {'trial','response','ellipse orientation','points','error','cue center','pre cue', 'post cue','resp_time'};
-    design.fields{iBlock}       = {'trial', 'mouse start x','mouse start y', ' width', 'roundness','trial duration'}; 
+    showinstructions(1, screen, iBlock)
+ 
+    data.fields{iBlock}         = {'trial','response','ellipse orientation','points','error','cue center','cue ID','resp_time'};
+    design.fields{iBlock}       = {'trial','mouse start x','mouse start y',' width','roundness','trial duration'}; 
     
     % Prepare empty data matrix
     if isempty(data.mat{iBlock})
@@ -200,86 +195,52 @@ for iBlock = blockStart:numel(design.types)
     switch design.types(iBlock)
         case 1 % Train
             params.width = design.width(1);
-            params.index = 2;
-            data.block_type{iBlock}     = 'T';
-            
-        case 2 % Adapt Contrast
-            design.target_error = design.med2sd*median(abs(data.mat{1}(:,5))); % Target error for adapt
-            params.width = design.width(2);
             params.index = 1;
             data.block_type{iBlock}     = 'A';
+            
+        case 2 % Adapt Contrast
+            params.width = design.width(1);
+            params.index = 1;
+            data.block_type{iBlock}     = 'T';
 
         case 3% High-Narrow
             params.width = design.width(1);
-            params.index = 1;
+            params.index = 2;
             data.block_type{iBlock}     = 'HN';
 
         case 4% High-Wide
             params.width = design.width(2);
-            params.index = 1;
+            params.index = 2;
             data.block_type{iBlock}     = 'HW';
 
         case 5% Low-Narrow
             params.width = design.width(1);
-            params.index = 2;
+            params.index = 1;
             data.block_type{iBlock}     = 'LN';
 
         case 6% Low-Wide
             params.width = design.width(2);
-            params.index = 2;
+            params.index = 1;
             data.block_type{iBlock}     = 'LW';
 
     end
     
     % Adaptive block, no cues, keeps going
-    if data.block_type{iBlock} == 'A';%iBlock == 2
-%         design.width(1)     = 10;
-%         design.width(2)     = 20; 
-%         design.roundness(1) = 20;
-        adapt = 1;
-        trial = 1;%needed??
+    if data.block_type{iBlock} == 'A';
         params.stim_type = 'ellipse';
-        target_end = 5;
-        back_count = 0;
-        stop_trial = 5;
-        while adapt == 1 || adapt == 2
-            params.trial_mean = rand(1)*180;
-            params.pre_cue = null_cue;
-            params.post_cue = null_cue;
-            trial_start = GetSecs;
-            
-        switch params.stim_type
-            case 'ellipse'
-                type_save = design.roundness(params.index);
-            case 'gabor'
-                type_save = design.contrast(params.index);
+        params.cue_type = 0;
+        params.pre_cue = null_cue;
+        params.post_cue = null_cue;
+        params.iblock = iBlock;
+        
+        switch design.adapt_type
+            case 1
+                [data, design, trial] = adapt_byz(screen, params, data, design, ring, outputFile);
+            case 2
+                [data, design, trial] = adapt_ott(screen, params, data, design, ring, trialStart, outputFile);
         end
         
-        % Pass info to runtrial
-        [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time] = runtrial(screen,design,iBlock,params,ring);
-
-        trial_end = GetSecs;
-        trial_dur = trial_end-trial_start;
-
-        % save into mat
-        data.mat{iBlock}(trial,:) = [ ...
-            trial, responseAngle, params.trial_mean, point_totes, resp_error,arc_mean, params.pre_cue, params.post_cue, resp_time   ...
-        ];
-        
-        design.mat{iBlock}(trial,:) = [...
-            trial, mouse_start(1), mouse_start(2), params.width, type_save, trial_dur ...
-        ];
-        
-        % Save data at the end of each trial
-        save(outputFile, 'data', 'design','trial','iBlock');
-        
-        % Go through adaptive, update roundness
-        [params, design,adapt,target_end,trial,stop_trial,back_count] = adaptive(resp_error,design,params,trial,data,adapt,target_end,screen,stop_trial,back_count);
-        
-        trial = trial + 1;            
-        end
     else
-    
     % Trials
     for trial = trialStart:design.numtrials(iBlock)
         trial_start = GetSecs;
@@ -303,10 +264,15 @@ for iBlock = blockStart:numel(design.types)
              elseif design.cue_order{iBlock}(trial) == 0 % none none
                 params.pre_cue = null_cue;
                 params.post_cue = null_cue;
+                
+             elseif design.cue_order{iBlock}(trial) == 3 % arc none
+                params.pre_cue = target_cue;
+                params.post_cue = null_cue;
+                 
              end
         end
 
-        % determine what to save
+        % Determine what to save
         switch params.stim_type
             case 'ellipse'
                 type_save = design.roundness(params.index);
@@ -315,14 +281,14 @@ for iBlock = blockStart:numel(design.types)
         end
         
         % Pass info to runtrial
-        [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial(screen,design,iBlock,params, ring);
+        [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial(screen,design,params, ring, iBlock,data);
         
         trial_end = GetSecs;
         trial_dur = trial_end-trial_start;
 
         % save into mat
         data.mat{iBlock}(trial,:) = [ ...
-            trial, responseAngle, params.trial_mean, point_totes, resp_error,(arc_mean*180/pi), params.pre_cue, params.post_cue, resp_time   ...
+            trial, responseAngle, params.trial_mean, point_totes, resp_error,arc_mean*180/pi, design.cue_order{iBlock}(trial), resp_time   ...
         ];
         
         design.mat{iBlock}(trial,:) = [...
@@ -335,13 +301,15 @@ for iBlock = blockStart:numel(design.types)
      end
     end
     
+    % End of block things
     block_end = GetSecs;
     exp_end = GetSecs;
     design.block_dur{iBlock} = block_end-block_start;
     design.exp_dur = exp_end-exp_start;
     
+    % If end of train block, set cue widths
     if data.block_type{iBlock} == 'T';
-        design.width(1) = design.med2sd*median(abs(data.mat{1}(:,5)));
+        design.width(1) = design.med2sd*median(abs(data.mat{2}([start_width:end],5)));
         design.width(2) = design.wide_ratio*design.width(1);
     end
     
@@ -355,15 +323,9 @@ for iBlock = blockStart:numel(design.types)
     trialStart = 1;    
     trial = Inf;    % Reached end of the block
 end 
-    
-    % Write Text
-    if sessionNo == 1
-        text = 'Session 1 completed!\n\n\n\nPlease find the experimenter';
-    else
-        text = 'Experiment completed!\n\n\n\nPlease find the experimenter';
-    end
 
     % Draw all the text
+    text = ['Session ' num2str(sessionNo) ' completed!\n\n\n\nPlease find the experimenter'];
     Screen('TextSize', screen.window, screen.text_size);
     DrawFormattedText(screen.window, text, 'center', screen.Ypixels * 0.4, screen.white);
     Screen('Flip', screen.window);

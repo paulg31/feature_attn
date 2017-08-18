@@ -15,7 +15,7 @@ exitLoop = 0;
 tic
 while ~exitLoop
     % Get the current position of the mouse
-    [mx, ~, ~] = GetMouse(screen.window);
+    [mx, ~, buttons] = GetMouse(screen.window);
     
     % Flip Mouse to other side if reaches 2nd closest pixel
     if mx < 2
@@ -41,7 +41,9 @@ while ~exitLoop
     Screen('Flip', screen.window,screen.ifi);
     
     % Response, separate fucntion
-    if KbCheck
+%     [~,~,buttons] = GetMouse(screen.window);
+%     if KbCheck
+    if buttons(1) == 1
         responseAngle = actual*180/pi;
         exitLoop = 1;
         resp_time = toc;

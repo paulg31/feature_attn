@@ -1,4 +1,4 @@
-function [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial( screen, design,iBlock,params,ring)
+function [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial( screen, design,params,ring, iBlock,data)
 % fixation for ~300ms
 % cue right after for 300ms
 % blank screen between pre cue and stim for 150ms
@@ -30,7 +30,7 @@ Screen(arc.type2draw.pre, screen.window, screen.lesswhite, arc.polyopp.pre);
 Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 
 % Cross and flip
-Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
+%Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
 WaitSecs(screen.cue_duration);
@@ -70,7 +70,7 @@ WaitSecs(screen.stim_post);
 [responseAngle, mouse_start,bar,resp_time ] = mousetracking(screen,arc,ring);
 
 % Get points from response, show feedback during train
-[ point_totes,resp_error] = feedback( params, responseAngle, screen, bar,ring);
+[ point_totes,resp_error] = feedback( params, responseAngle, screen, bar,ring,design,data, iBlock);
 
 WaitSecs(screen.betweentrials);
 end
