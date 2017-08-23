@@ -35,6 +35,10 @@ while ~exitLoop
     Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.cover.post);
     Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.polyopp.post);
     Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
+   
+    % Change the blend function to draw an antialiased fixation point
+    % in the centre of the array
+    %Screen('BlendFunction', screen.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
     
     Screen('DrawTexture', screen.window, bar.recttexture, [], [], theta*180/pi);
     Screen('FillOval', screen.window, ring.color, ring.allRects);

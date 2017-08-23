@@ -1,9 +1,9 @@
 function [ point_totes,resp_error] = feedback( params, responseAngle, screen, bar,ring,design,data, iBlock)
     
     if data.block_type{iBlock} ==  'A' 
-        sigma = 10;
+        sigma = design.target_SDerror*design.pointsigma_mult;
     elseif data.block_type{iBlock} ==  'T'
-        sigma = 10;
+        sigma = design.target_SDerror*design.pointsigma_mult;
     else
         sigma = design.pointsigma_mult*design.width(1);
     end
@@ -30,7 +30,7 @@ function [ point_totes,resp_error] = feedback( params, responseAngle, screen, ba
     text = [num2str(point_totes) form];
     Screen('TextSize', screen.window, screen.text_size);
     DrawFormattedText(screen.window,text,...
-        'center', screen.Ypixels * 0.35, screen.white);
+        'center', screen.Ypixels * 0.3, screen.white);
     Screen('DrawTexture', screen.window, bar.recttexture, [], [], -responseAngle);
     Screen('DrawTexture', screen.window, bar.recttexture_true, [], [], -params.trial_mean);
 

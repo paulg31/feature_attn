@@ -27,12 +27,14 @@ for trial = trialStart:design.numtrials(params.iblock)
             trial, mouse_start(1), mouse_start(2), params.width, type_save,trial_dur ...
         ];
         
-        block_save = params.iblock;
+        iBlock = params.iblock;
         % Save data at the end of each trial
-        save(outputFile, 'data', 'design','trial','block_save');
+        save(outputFile, 'data', 'design','trial','iBlock');
         
         design = adaptive_v2(trial, params, design, data);
 end
-
-design = set_roundness(design, data,params);
+    roundness_vec = design.mat{1}([design.discard4round :end],5);
+    error_vec = data.mat{1}([design.discard4round :end],5);
+    targetSDerror = design.target_SDerror;
+    design.roundness(1) = computeTargetRoundness(roundness_vec,error_vec,targetSDerror);
 end

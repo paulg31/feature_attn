@@ -2,7 +2,7 @@ function [ design ] = adaptive_v2( trial, params, design, data)
     resp_error = data.mat{params.iblock}(trial,5);
     if trial <= 10
         round_change = 2;
-    elseif trial > 10 && trial <= 32
+    elseif trial > 10 && trial < 21
         round_change = 1;
     else
         round_change = .5;
@@ -18,4 +18,3 @@ function [ design ] = adaptive_v2( trial, params, design, data)
     end
     
 end
-

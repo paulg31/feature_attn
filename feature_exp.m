@@ -22,7 +22,7 @@ if nargin < 5 || isempty(debug)
 end
 
 % Exp Design
-design.types        = [1 2 5 5];                    % Blocks
+design.types        = [1 2 7 5 5];                    % Blocks
 design.contrasts    = [.004 .008 .017 .033 .067 .135];  % Used  only for Gabor stimulus
 design.roundness    = [15 15];                           % Larger value, more circular
 design.width        = [10 10];                         % distribution width types, narrow, wide
@@ -34,29 +34,37 @@ design.wide_ratio   = sqrt(3);          % multiplier for wide cue
 design.cue_ratio    = .25;              % ratio for both the pre+post and post conditions
 design.target_lowerbound = .75;
 design.target_upperbound = 1.25;
-design.target_SDerror = 10;
-design.adapt_type = 1;
-design.pointsigma_mult = .7;
-target_cue          = 2;                % arc
-null_cue            = 0;                % 0 for circle, 2 for nothing
+design.target_SDerror    = 10;
+design.adapt_type        = 2;
+design.pointsigma_mult   = .7;
+design.date         = date;
+clock_vals = clock;
+design.time_start = clock_vals(4:end);
+target_cue               = 1;                % arc
+null_cue                 = 0;                % 0 for circle, 2 for nothing
+
 
 switch debug
     case 0
-        design.s1_trials    = [100 152 152 152 152 152];      % Trials for the first session [180 152 152 152 152]
-        design.other_trials = [180 180 180 180];        % Trials for the rest of the sessions [180 180 180 180]
+        design.intro_trials    = [152 120 10];      % Trials for the intro blocks
+        design.session_trials  = 132;     % Trials for rest of blocks in session 1
+        design.other_trials = 148;        % Trials for the rest of the sessions
         params.highstep_trials = 100;
         params.start_check = 100;
         params.mod_val = 10;
         params.move_wind_size = 50;
-        start_width = 29;
+        start_width = 1;
+        design.discard4round = 21;
     case 1
-        design.s1_trials    = [10 10 4 4 4 4];      % Trials for the first session [180 152 152 152 152]
-        design.other_trials = [8 8 8 8];        % Trials for the rest of the sessions [180 180 180 180]
+        design.intro_trials    = [10 10 3];      % Trials for the intro blocks
+        design.session_trials  = 4;     % Trials for rest of blocks in session 1
+        design.other_trials = 4;        % Trials for the rest of the sessions
         params.highstep_trials = 10;
         params.start_check = 10;
         params.mod_val = 5;
         params.move_wind_size = 10;
         start_width = 1;
+        design.discard4round = 1;
 end
 
 
@@ -94,7 +102,7 @@ else
     % Start from scratch
     trialStart = 1;
     blockStart = 1;
-
+    
     % Shuffle test blocks
     [design] = shuffle_blocks( design, sessionNo, resultsFolder, subjId);
     
@@ -222,6 +230,11 @@ for iBlock = blockStart:numel(design.types)
             params.width = design.width(2);
             params.index = 1;
             data.block_type{iBlock}     = 'LW';
+            
+        case 7% Intruct
+            params.width = design.width(1);
+            params.index = 1;
+            data.block_type{iBlock}     = 'I';
 
     end
     
@@ -246,6 +259,11 @@ for iBlock = blockStart:numel(design.types)
         trial_start = GetSecs;
         params.stim_type   = 'ellipse';
         params.trial_mean = rand(1)*180; % Random Orientation
+        
+        if data.block_type{iBlock} == 'I'
+            showinstructions(5,screen, iBlock)
+            showinstructions(6,screen, iBlock)
+        end
         
         if data.block_type{iBlock} == 'T'
             params.pre_cue = null_cue;
@@ -303,6 +321,8 @@ for iBlock = blockStart:numel(design.types)
     
     % End of block things
     block_end = GetSecs;
+    end_vals = clock;
+    design.time_end = end_vals(4:end);
     exp_end = GetSecs;
     design.block_dur{iBlock} = block_end-block_start;
     design.exp_dur = exp_end-exp_start;

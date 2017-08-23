@@ -26,6 +26,14 @@ switch type
         text = [text '\nthank you'];
         ypos = .25;
         
+    case 5
+        text = 'Instructions on how to use cues?';
+        ypos = .25;
+        
+    case 6 
+        text = 'Next Screen of instructions';
+        ypos = .25;
+        
     otherwise
         text = [];
         

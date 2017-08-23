@@ -1,7 +1,7 @@
 function [design] = shuffle_blocks( design, sessionNo, resultsFolder, subjId)
 % Block Order
-    perm_order = design.types(3:numel(design.types));
-    design.types = [1 2];
+    perm_order = design.types(4:numel(design.types));
+    design.types = [1 2 7];
 
         % Shuffle test blocks
             redo = 1;
@@ -15,13 +15,15 @@ function [design] = shuffle_blocks( design, sessionNo, resultsFolder, subjId)
             
             if sessionNo == 1
                 design.types = [design.types perm perm2];
-                design.trial_nums   = design.s1_trials;
+                rest_trials = repmat(design.session_trials,[1,numel(design.types)-3]);
+                design.trial_nums   = [design.intro_trials rest_trials];
             else
+%                 design.new_trial_nums = design.other_trials;
                 prev_File          = [resultsFolder,'Subj',subjId,'_Session'...
                                 num2str(sessionNo-1) '_data.mat'];
                 load(prev_File)
-                design.types = [perm perm2];
-                design.trial_nums   = design.other_trials;
+                design.types = [perm perm2 perm2];
+                design.trial_nums   = [repmat(design.other_trials,[1,numel(design.types)])];%**CHANGE TO DESIGN.OTHER_TRIALS FOR EXP
             end
           
 end
