@@ -1,32 +1,38 @@
-function drawgabor(screen,stim,params)
-% UNUSED -- Most Likely Does Not Work Anymore
-% draws the stimulus for a period of time from info in gaborinfo
+function drawgabor(screen,stim,params,ring)
+
+if params.instruct == 1 || params.instruct == 2
+    
+    switch params.instruct
+        case 1
+            params.trial_mean = params.instruct_mean;
+        case 2
+            params.trial_mean = params.add;
+    end
+    
+    params.contrast = .23;
+end
 
 propertiesMat    = stim.gabor.propertiesMat;
 propertiesMat(4) = params.contrast;    % Current Gabor contrast
-phaseLine        = stim.gabor.phaseLine;
-startTime        = GetSecs;
-lastTime         = 0;
-frame            = 0;
 
 w = stim.gabor.grateAlphaMaskSize;
-destRect = [stim.gabor.center stim.gabor.center] +[-w/2 -w/2 w/2 w/2];
 
-% while (lastTime - startTime) < gabor.display_length
-%     frame = frame+1;
-%     
-%     % Increment the phase of Gabors
-%     phaseLine = phaseLine + gabor.degPerFrameGabors;
-%     propertiesMat(:,1) = phaseLine';
-   
-    % Check texture
-    Screen('DrawTexture', screen.window, stim.gabor.tex, [], destRect, params.trial_mean-90,...
-        [], [], [], [], kPsychDontDoRotation, propertiesMat');
-    
-%     lastTime = Screen('Flip',screen.window, startTime + frame*gabor.ifi);
-% 
-% end
-    
-% Flip our drawing to the screen
-Screen('Flip', screen.window, screen.ifi);
+if params.instruct == 2
+    destRect = [stim.gabor.center stim.gabor.center] +[-w/2 -w/2 w/2 w/2];
+    destRect = destRect + [0 190 0 190];
+else
+    destRect = [stim.gabor.center stim.gabor.center] +[-w/2 -w/2 w/2 w/2];
+end
+
+
+Screen('BlendFunction',screen.window,GL_ONE,GL_ZERO,[]);
+% Check texture
+Screen('DrawTexture', screen.window, stim.gabor.tex, [], destRect, params.trial_mean-90,...
+    [], [], [], [], kPsychDontDoRotation, propertiesMat');
+
+if params.instruct ~= 1 && params.instruct ~=2
+    Screen('FillOval', screen.window, ring.color, ring.allRects);
+    Screen('Flip', screen.window);
+end
+
 end

@@ -33,8 +33,13 @@ for trial = trialStart:design.numtrials(params.iblock)
         
         design = adaptive_v2(trial, params, design, data);
 end
-    roundness_vec = design.mat{1}([design.discard4round :end],5);
+    rel_vec = design.mat{1}([design.discard4round :end],5);
     error_vec = data.mat{1}([design.discard4round :end],5);
     targetSDerror = design.target_SDerror;
-    design.roundness(1) = computeTargetRoundness(roundness_vec,error_vec,targetSDerror);
+    switch params.stim_type
+        case 'ellipse'
+            design.roundness(1) = computeTargetRoundness(rel_vec,error_vec,targetSDerror);
+        case 'gabor'
+            design.contrast(1) = computeTargetRoundness(rel_vec,error_vec,targetSDerror);
+    end
 end

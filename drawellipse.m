@@ -2,9 +2,23 @@ function drawellipse( screen, stim, params,ring)
 % Code taken from Will, still unsure how it does what it does, but it draws
 % a bunch of circles on top of each other to make a smooth ellipse.
 
-stim.ort  = params.trial_mean;
-rot       = stim.ort - 90;
-roundness = stim.ellipse.cur_sigma; % linspace(.15,.8,6)
+if params.instruct == 1 || params.instruct == 2
+    
+    switch params.instruct
+        case 1
+            rot = params.instruct_mean - 90;
+        case 2
+            rot = params.add - 90;
+    end
+    
+    roundness = 2.5;  
+    
+else
+    stim.ort  = params.trial_mean;
+    rot       = stim.ort - 90;
+    roundness = stim.ellipse.cur_sigma; % linspace(.15,.8,6)
+end
+
 area      = stim.ellipse.AreaPx;
 fgcol     = screen.white;
 bgcol     = screen.bgcolor;
@@ -64,9 +78,19 @@ centerY  = screen.yCenter;
 textureW = size(im,2);
 textureH = size(im,1); 
 texture  = Screen('MakeTexture',screen.window,im);
-destRect = ceil([centerX centerY centerX centerY] + [-textureW -textureH textureW textureH] / 2);
+
+if params.instruct == 2
+    destRect = ceil([centerX centerY centerX centerY] + [-textureW -textureH textureW textureH] / 2);
+    destRect = destRect + [0 190 0 190];
+else
+    destRect = ceil([centerX centerY centerX centerY] + [-textureW -textureH textureW textureH] / 2);
+end
+
 Screen('DrawTexture', screen.window, texture, [], destRect);
 Screen('Close', texture);
-Screen('FillOval', screen.window, ring.color, ring.allRects);
-Screen('Flip', screen.window);
+
+if params.instruct ~= 1 && params.instruct ~=2
+    Screen('FillOval', screen.window, ring.color, ring.allRects);
+    Screen('Flip', screen.window);
+end
 

@@ -5,7 +5,7 @@ switch params.stim_type
 
         stim.gabor.display_length        = screen.stim_duration;
         stim.gabor.drift_speed           = screen.gabor_drift;
-        stim.gabor.numCycles             = (.8 / screen.stimwidthmultiplier);
+        stim.gabor.numCycles             = 2;%(2 / screen.stimwidthmultiplier);
         stim.gabor.degPerSec             = 360 * stim.gabor.drift_speed; %lower multiple slower speed
         stim.gabor.degPerFrameGabors     = stim.gabor.degPerSec * screen.ifi;
         stim.gabor.ifi                   = screen.ifi;    %inter-frame interval (1/Hz)
@@ -14,21 +14,21 @@ switch params.stim_type
         stim.gabor.backgroundOffset      = [0.5 0.5 0.5 0.0];
         stim.gabor.disableNorm           = 1;
         stim.gabor.preContrastMultiplier = 0.5;
-        stim.gabor.sigma                 = (.8 * screen.stimwidthmultiplier) * screen.pxPerDeg; % ~ 1.2 visual degrees converted to pixels
+        stim.gabor.sigma                 = (.8 * screen.stimwidthmultiplier) * screen.pxPerDeg; % ~1.2 dva?
         stim.gabor.freq                  = stim.gabor.numCycles ./ screen.pxPerDeg;
         stim.gabor.aspectRatio           = 1.0;
-        stim.gabor.grateAlphaMaskSize    = round(6*stim.gabor.sigma);
+        stim.gabor.grateAlphaMaskSize    = round(6*stim.gabor.sigma/2);
 
         % Build a procedural gabor texture 
         stim.gabor.tex = CreateProceduralGabor(screen.window, stim.gabor.grateAlphaMaskSize, stim.gabor.grateAlphaMaskSize, [],...
             stim.gabor.backgroundOffset, stim.gabor.disableNorm, stim.gabor.preContrastMultiplier);
 
         % Store 'DrawTexture' info for gabor in matrix
-        stim.gabor.propertiesMat = [stim.gabor.phaseLine, stim.gabor.freq, stim.gabor.sigma, NaN, stim.gabor.aspectRatio, 0, 0, 0];
+        stim.gabor.propertiesMat = [stim.gabor.phaseLine, stim.gabor.freq, stim.gabor.sigma/2, NaN, stim.gabor.aspectRatio, 0, 0, 0];
 
     case 'ellipse'
         % Ellipse parameters
-        stim.ellipse.AreaDegSq  = 2; % ellipse area in degrees squared??
+        stim.ellipse.AreaDegSq  = 1; % ellipse area in degrees squared??
         stim.ellipse.AreaPx     = screen.pxPerDeg^2 * stim.ellipse.AreaDegSq; % ellipse area in number of pixels
         stim.ellipse.Color      = 0;
         stim.ellipse.attention_stim_spacing = 5; % ran as 7 in pilot 1 % for multiple stimuli, distance from center (ie radius), in degrees

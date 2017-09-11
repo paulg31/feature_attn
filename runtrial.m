@@ -17,7 +17,7 @@ Screen('Flip', screen.window);
 
 % Wait
 fixDuration = screen.fixationdur*(1+screen.jitter*(2*rand()-1));
-WaitSecs(fixDuration);
+WaitSecs(fixDuration); %500 ms
 
 % Get arc info
 [arc,arc_mean] = drawarc( screen,design,params );
@@ -30,24 +30,22 @@ Screen(arc.type2draw.pre, screen.window, screen.lesswhite, arc.polyopp.pre);
 Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 
 % Cross and flip
-%Screen('DrawTexture', screen.window, screen.cross, [], [], 0);
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
-WaitSecs(screen.cue_duration);
+WaitSecs(screen.cue_duration); %300 ms
 
-% Dot as same color as background, wait screen 
-Screen('DrawDots',screen.window,[screen.xCenter screen.yCenter],2,screen.bgcolor,[],2)
+% Wait Screen
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
-WaitSecs(screen.stim_pre);
+WaitSecs(screen.stim_pre); %200 ms
 
 switch params.stim_type
     case 'gabor'
         
         % Get gabor params
-        params.contast  = design.contrasts(params.index);    
+        params.contrast  = design.contrast(params.index);    
         stim            = stim_info(screen,params);
-        drawgabor(screen,stim,params);
+        drawgabor(screen,stim,params,ring);
         
     case 'ellipse'
         
@@ -58,13 +56,12 @@ switch params.stim_type
 end
 
 % KbWait;
-WaitSecs(screen.stim_duration);
+WaitSecs(screen.stim_duration); % 50 ms
 
-% Dot as same color as background, wait screen 
-Screen('DrawDots',screen.window,[screen.xCenter screen.yCenter],2,screen.bgcolor,[],2)
+% Wait Screen
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 Screen('Flip', screen.window);
-WaitSecs(screen.stim_post);
+WaitSecs(screen.stim_post);% 300 ms
 
 % Begin response
 [responseAngle, mouse_start,bar,resp_time ] = mousetracking(screen,arc,ring);
@@ -72,5 +69,5 @@ WaitSecs(screen.stim_post);
 % Get points from response, show feedback during train
 [ point_totes,resp_error] = feedback( params, responseAngle, screen, bar,ring,design,data, iBlock);
 
-WaitSecs(screen.betweentrials);
+WaitSecs(screen.betweentrials); % 300 ms
 end

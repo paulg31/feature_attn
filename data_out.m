@@ -17,7 +17,7 @@ for sessionNo = 1:2
     new_data.widths = design.width;
     
     if sessionNo == 1
-        for ii = 3:numel(data.block_type)
+        for ii = 1:numel(data.block_type)
             if data.block_type{ii} == 'LN'
                 if isempty(low_narrow_data)
                     low_narrow_data = data.mat{ii};
@@ -44,10 +44,6 @@ new_data.block_type{1} = 'LN';
 clearvars -except new_data subjId 
 
 for iblock = 1:numel(new_data.block_type)
-        %Converts to degrees
-%         for trial = 1:numel(new_data.mat{iblock}(:,1))
-%             new_data.mat{(iblock)}(trial,6) = new_data.mat{(iblock)}(trial,6)*180/pi;
-%         end
         
         % Calculates 'relative Cue' and puts it in the 4th column of data
         for trial = 1:numel(new_data.mat{iblock}(:,1))
@@ -61,9 +57,6 @@ for iblock = 1:numel(new_data.block_type)
 end
 clearvars -except new_data subjId 
 
-span = -50:.1:50;
-cue_opp = [0 1 2 3];
-bias_lownarrow = []; 
 iblock = 1;
 null_trials = [];
 pre_trials = [];

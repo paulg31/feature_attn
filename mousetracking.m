@@ -9,8 +9,8 @@ ystart      = rand*screen.windowRect(4);
 mouse_start = [xstart,ystart];
 SetMouse(xstart,ystart,screen.window);
 
-RestrictKeysForKbCheck(84); %T for response, arbitrary, can be changed
-
+RestrictKeysForKbCheck(84); %T for response, arbitrary, can be changed NOW IS JUST MOUSE
+Screen('BlendFunction',screen.window,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,[]);
 exitLoop = 0; 
 tic
 while ~exitLoop
@@ -36,17 +36,12 @@ while ~exitLoop
     Screen(arc.type2draw.post, screen.window, screen.lesswhite, arc.polyopp.post);
     Screen(arc.type2draw.post, screen.window, screen.bgcolor, arc.coveropp.post);
    
-    % Change the blend function to draw an antialiased fixation point
-    % in the centre of the array
-    %Screen('BlendFunction', screen.window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
-    
-    Screen('DrawTexture', screen.window, bar.recttexture, [], [], theta*180/pi);
+    xy = [screen.bar_height/2*cos(theta) -screen.bar_height/2*cos(theta);screen.bar_height/2*sin(theta) -screen.bar_height/2*sin(theta)];
+    Screen('DrawLines',screen.window,xy,screen.bar_width,screen.lesswhite,[screen.xCenter screen.yCenter],1);
     Screen('FillOval', screen.window, ring.color, ring.allRects);
     Screen('Flip', screen.window,screen.ifi);
     
-    % Response, separate fucntion
-%     [~,~,buttons] = GetMouse(screen.window);
-%     if KbCheck
+    % Response, separate fucntions
     if buttons(1) == 1
         responseAngle = actual*180/pi;
         exitLoop = 1;
@@ -54,5 +49,5 @@ while ~exitLoop
     end
     
 end
-RestrictKeysForKbCheck([])
+RestrictKeysForKbCheck([]);
 end

@@ -31,8 +31,16 @@ function [ point_totes,resp_error] = feedback( params, responseAngle, screen, ba
     Screen('TextSize', screen.window, screen.text_size);
     DrawFormattedText(screen.window,text,...
         'center', screen.Ypixels * 0.3, screen.white);
-    Screen('DrawTexture', screen.window, bar.recttexture, [], [], -responseAngle);
-    Screen('DrawTexture', screen.window, bar.recttexture_true, [], [], -params.trial_mean);
+    true_angle = params.trial_mean*pi/180;
+    response_angle = responseAngle *pi/180;
+    xy_true = [screen.bar_height/2*cos(-true_angle) -screen.bar_height/2*cos(-true_angle);screen.bar_height/2*sin(-true_angle) -screen.bar_height/2*sin(-true_angle)];
+    xy_resp = [screen.bar_height/2*cos(-response_angle) -screen.bar_height/2*cos(-response_angle);screen.bar_height/2*sin(-response_angle) -screen.bar_height/2*sin(-response_angle)];
+    Screen('BlendFunction',screen.window,GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA,[]);
+    Screen('DrawLines',screen.window,xy_resp,screen.bar_width,screen.lesswhite,[screen.xCenter screen.yCenter],1);
+    Screen('DrawLines',screen.window,xy_true,screen.bar_width,screen.black,[screen.xCenter screen.yCenter],1);
+    
+%     Screen('DrawTexture', screen.window, bar.recttexture, [], [], -responseAngle);
+%     Screen('DrawTexture', screen.window, bar.recttexture_true, [], [], -params.trial_mean);
 
     %Flip to Screen
     Screen('FillOval', screen.window, ring.color, ring.allRects);

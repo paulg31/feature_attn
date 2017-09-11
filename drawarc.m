@@ -1,9 +1,13 @@
 function [arc, arc_mean] = drawarc(screen,design,params)
+%if nargin <4;params.cue_instruct = 0;end
 % Creates the pre and post cues. Draws 2 arcs on opposite sides, then
 % covers them so they're not 'blocky'
 
+xCenter = screen.xCenter;
+yCenter = screen.yCenter;    
+
 % Circle Cue diameter and thickness in pixels
-diam  = screen.circle_size*screen.pxPerDeg;
+diam  = 2*screen.circle_size*screen.pxPerDeg;
 thick = screen.circle_thickness*screen.pxPerDeg;
 
 % Arc Cue Information
@@ -34,16 +38,16 @@ for angle  = spans
     dist_height   = 10*normpdf(angle,arc_mean,sigma)+radius;
 
     % Arc cover points
-    xval(count)   = cos(angle)*radius +screen.xCenter;
-    yval(count)   = -sin(angle)*radius +screen.yCenter;
-    xvalop(count) = -cos(angle)*radius +screen.xCenter;
-    yvalop(count) = sin(angle)*radius +screen.yCenter;
+    xval(count)   = cos(angle)*radius +xCenter;
+    yval(count)   = -sin(angle)*radius +yCenter;
+    xvalop(count) = -cos(angle)*radius +xCenter;
+    yvalop(count) = sin(angle)*radius +yCenter;
 
     % Arc points
-    newy(count)   = -sin(angle)*(dist_height) + screen.yCenter;
-    newx(count)   = cos(angle)*(dist_height) + screen.xCenter;
-    newyop(count) = sin(angle)*(dist_height) + screen.yCenter;
-    newxop(count) = -cos(angle)*(dist_height) + screen.xCenter;
+    newy(count)   = -sin(angle)*(dist_height) + yCenter;
+    newx(count)   = cos(angle)*(dist_height) + xCenter;
+    newyop(count) = sin(angle)*(dist_height) + yCenter;
+    newxop(count) = -cos(angle)*(dist_height) + xCenter;
     
     count = count +1;
 end
@@ -65,8 +69,8 @@ switch params.pre_cue
         arc.polyopp.pre = [newxop',newyop'];
         
     case 0 % Circle
-        arc.poly.pre = CenterRectOnPointd(circle.baseRect, screen.xCenter, screen.yCenter);
-        arc.cover.pre = CenterRectOnPointd(circle.baseRect2,screen.xCenter, screen.yCenter);
+        arc.poly.pre = CenterRectOnPointd(circle.baseRect,xCenter, yCenter);
+        arc.cover.pre = CenterRectOnPointd(circle.baseRect2,xCenter, yCenter);
         arc.polyopp.pre = [0 0 0 0];
         arc.coveropp.pre = [0 0 0 0];
         arc.type2draw.pre = 'FillOval';
@@ -83,7 +87,8 @@ end
 switch params.post_cue
 
     case 1 % Arcs
-        arc.type2draw.post = 'FillPoly';        
+        arc.type2draw.post = 'FillPoly';
+        
         % Arc Cover
         arc.cover.post     = [xval',yval'];
         arc.coveropp.post   = [xvalop',yvalop'];
@@ -93,8 +98,8 @@ switch params.post_cue
         arc.polyopp.post = [newxop',newyop'];
         
     case 0 % Circle
-        arc.poly.post = CenterRectOnPointd(circle.baseRect, screen.xCenter, screen.yCenter);
-        arc.cover.post = CenterRectOnPointd(circle.baseRect2,screen.xCenter, screen.yCenter);
+        arc.poly.post = CenterRectOnPointd(circle.baseRect, xCenter, yCenter);
+        arc.cover.post = CenterRectOnPointd(circle.baseRect2,xCenter, yCenter);
         arc.polyopp.post = [0 0 0 0];
         arc.coveropp.post = [0 0 0 0];
         arc.type2draw.post = 'FillOval';
