@@ -2,7 +2,18 @@ function [arc, arc_mean] = drawarc(screen,design,params)
 %if nargin <4;params.cue_instruct = 0;end
 % Creates the pre and post cues. Draws 2 arcs on opposite sides, then
 % covers them so they're not 'blocky'
+arc_sigma   = params.width;
 
+if params.cue_instruct == 1
+    arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;
+elseif params.cue_instruct == 2
+    arc_mean    = (.5*arc_sigma + params.trial_mean)*pi/180;
+elseif params.cue_instruct == 3
+    arc_mean    = (2.25*arc_sigma + params.trial_mean)*pi/180;
+else
+    arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;
+end
+    
 xCenter = screen.xCenter;
 yCenter = screen.yCenter;    
 
@@ -12,9 +23,8 @@ thick = screen.circle_thickness*screen.pxPerDeg;
 
 % Arc Cue Information
 radius      = design.arc_dist*screen.pxPerDeg;
-arc_sigma   = params.width;
 dev_draw    = 3; % how far out to draw arcs
-arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;
+%arc_mean    = (randn*arc_sigma + params.trial_mean)*pi/180;
 arc_step    = pi/180;
 arc_start   = arc_mean - (dev_draw*arc_sigma*pi/180);
 arc_end     = arc_mean + (dev_draw*arc_sigma*pi/180);
@@ -112,4 +122,3 @@ switch params.post_cue
         arc.type2draw.post = 'FillOval';
 end
 end
-

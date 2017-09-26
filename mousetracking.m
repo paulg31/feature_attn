@@ -1,7 +1,4 @@
-function [responseAngle, mouse_start, bar, resp_time] = mousetracking(screen,arc,ring)
-% Bar Info
-bar.texturerect = ones(screen.bar_width,screen.bar_height).*screen.lesswhite;
-bar.recttexture = Screen('MakeTexture',screen.window,bar.texturerect);
+function [responseAngle, mouse_start, resp_time] = mousetracking(screen,arc,ring,trial,design,iBlock)
 
 % Set mouse at random position
 xstart      = rand*screen.windowRect(3);
@@ -38,6 +35,7 @@ while ~exitLoop
    
     xy = [screen.bar_height/2*cos(theta) -screen.bar_height/2*cos(theta);screen.bar_height/2*sin(theta) -screen.bar_height/2*sin(theta)];
     Screen('DrawLines',screen.window,xy,screen.bar_width,screen.lesswhite,[screen.xCenter screen.yCenter],1);
+    progress_bar( screen, design,trial,iBlock )
     Screen('FillOval', screen.window, ring.color, ring.allRects);
     Screen('Flip', screen.window,screen.ifi);
     

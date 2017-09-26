@@ -1,23 +1,44 @@
-function data_out(subjId)
+function data_out(subjId,whichSess)
 
 % Spits out the results .txt file into a data_out folder( creates it if
 % not there). Overwriting files is an issue, will be fixed soon, as well as
 % adding detailed descriptions of what section does what.
+
+if nargin < 2 || isempty(whichSess)
+    whichSess = 3;
+end
 
 subjId = upper(subjId);
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'results' filesep()];
 low_narrow_data = [];
 
-for sessionNo = 1:2
+switch whichSess
+    case 1 %only first session
+        span = 1;
+        initial_sess = 1;
+        type_save = 'Sess1.txt';
+    case 2 %only second session
+        span = 2;
+        initial_sess = 2;
+        type_save = 'Sess2.txt';
+    case 3 % both first and second sessions
+        span = 1:2;
+        initial_sess = 1;
+        type_save = 'both.txt';
+end
+
+
+for sessionNo = span
     outputFile          = [resultsFolder,'Subj',subjId,'_Session'...
                             num2str(sessionNo) '_data.mat'];
     load(outputFile)
     new_data.roundness = design.roundness(1);
     new_data.widths = design.width;
     
-    if sessionNo == 1
+    if sessionNo == initial_sess
         for ii = 1:numel(data.block_type)
+            %if ii ~= 5% excluding yanli's block 5
             if data.block_type{ii} == 'LN'
                 if isempty(low_narrow_data)
                     low_narrow_data = data.mat{ii};
@@ -26,6 +47,7 @@ for sessionNo = 1:2
                     low_narrow_data = [low_narrow_data;data.mat{ii}];
                     low_narrow_design = [low_narrow_design; design.mat{ii}];
                 end
+            %end
             end
         end
     else
@@ -41,7 +63,7 @@ end
 new_data.mat{1} = low_narrow_data;
 new_data.design{1} = low_narrow_design;
 new_data.block_type{1} = 'LN';
-clearvars -except new_data subjId 
+clearvars -except new_data subjId type_save
 
 for iblock = 1:numel(new_data.block_type)
         
@@ -55,7 +77,7 @@ for iblock = 1:numel(new_data.block_type)
             new_data.mat{(iblock)}(trial,4) = diff;
         end
 end
-clearvars -except new_data subjId 
+clearvars -except new_data subjId type_save
 
 iblock = 1;
 null_trials = [];
@@ -129,7 +151,7 @@ titles{1} = 'null';titles{2} = 'post';titles{3} = 'prepost';titles{4} = 'pre';
 
 [currentPath,~,~]   = fileparts(which(mfilename()));
 resultsFolder       = [currentPath filesep() 'data_out' filesep()];
-outputFile          = [resultsFolder,subjId,'data_out.txt']; 
+outputFile          = [resultsFolder,subjId,type_save]; 
 
 % Create results folder if it does not exist already
 if ~exist([currentPath filesep() 'data_out'],'dir')

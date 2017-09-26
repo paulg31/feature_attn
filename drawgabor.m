@@ -31,6 +31,7 @@ Screen('DrawTexture', screen.window, stim.gabor.tex, [], destRect, params.trial_
     [], [], [], [], kPsychDontDoRotation, propertiesMat');
 
 if params.instruct ~= 1 && params.instruct ~=2
+    progress_bar( screen, design,trial,iBlock )
     Screen('FillOval', screen.window, ring.color, ring.allRects);
     Screen('Flip', screen.window);
 end

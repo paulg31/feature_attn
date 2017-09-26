@@ -22,33 +22,36 @@ if nargin < 5 || isempty(debug)
 end
 
 % Exp Design
-design.types        = [1 2 7 5 5];                      % Blocks, numbers explained later
+design.types        = [1 2 8 7 5 5];                      % Blocks, numbers explained later
 design.contrast    = [.135 .017];       % Used only for Gabor stimulus, Will -- linspace(.004,.135,6)
-design.roundness    = [5 5];                          % Larger value, more circular
-design.width        = [10 10];                        % distribution width types, narrow, wide
+design.roundness    = [5 15];                          % Larger value, more circular
+design.width        = [9 13];                        % distribution width types, narrow, wide
 design.arc_dist     = 3.3;                % arc distance from center in dva
 design.med2sd       = 1.48;             % conversion for median to sd
 design.mean_mult    = 1.25;             % multiplier for median/mean
-design.wide_ratio   = sqrt(3);          % multiplier for wide cue
+design.wide_ratio   = 1.5;          % multiplier for wide cue, was sqrt(3)
 design.cue_ratio    = .25;              % ratio for both the pre+post and post conditions
 design.target_lowerbound = .75;         % lower bound for adaptive
 design.target_upperbound = 1.25;        % upper bound for adaptive
-design.target_SDerror    = 10;          % target SD erroe, includes 1.48 multiplier
-design.pointsigma_mult   = .7;          % sigma for feedback distribution
+design.target_SDerror    = [9 9];          % target SD error, includes 1.48 multiplier
+design.pointsigma_mult   = [.7 .7];          % sigma for feedback distribution
 design.date              = date;        % gets the date
 clock_vals               = clock;       % gets the time
 design.time_start = clock_vals(4:end);  % saves only hour/min/sec
 target_cue               = 1;           % 1 for arc
 null_cue                 = 0;           % 0 for circle, 2 for nothing
+design.high_rel          = 1; 
+design.low_rel           = 2;
 design.stim              = 1;           % 1 for ellipse 2 for gabor
 design.adapt_type        = 2;           % adaptive type, switch to 1 for longer/older verison(adapt_byz)
+design.point_array       = [];          % points for cumulative average
 
 
 switch debug
     case 0
-        design.intro_trials     = [172 120 10];  % Trials for the intro blocks
-        design.session_trials   = 132;           % Trials for rest of blocks in session 1
-        design.other_trials     = 148;           % Trials for the rest of the sessions
+        design.intro_trials     = [172 120 172 30];  % Trials for the intro blocks
+        design.session_trials   = 136;           % Trials for rest of blocks in session 1
+        design.other_trials     = 144;           % Trials for the rest of the sessions
         params.highstep_trials  = 100;           % Step of 2 for first 100 trilas in adapt_byz
         params.start_check      = 100;           % Start to check med error in adapt_byz
         params.mod_val          = 10;            % Check error every mod_val trials in adapt_byz
@@ -58,9 +61,9 @@ switch debug
         start_width             = 1;             % Start setting the width from this trial onwards
         design.discard4round    = design.oneStep+1; % Start with this trial to set roundness
     case 1
-        design.intro_trials     = [3 3 6];
-        design.session_trials   = 3;
-        design.other_trials     = 20;     
+        design.intro_trials     = [3 3 3 3];
+        design.session_trials   = 8;
+        design.other_trials     = 8;     
         params.highstep_trials  = 10;
         params.start_check      = 10;
         params.mod_val          = 5;
@@ -73,8 +76,8 @@ end
 
 % Instruction Block trial division
 design.post_start   = 1;    % Start with Post for 1/3
-design.pre_start    = ceil((1/3)*design.intro_trials(3));   %Continue with pre
-design.pre_end      = ceil((2/3)*design.intro_trials(3));   %End with pre+post
+design.pre_start    = ceil((1/3)*design.intro_trials(4));   %Continue with pre
+design.pre_end      = ceil((2/3)*design.intro_trials(4));   %End with pre+post
 
 % Folders
 [currentPath,~,~]   = fileparts(which(mfilename()));
@@ -97,11 +100,13 @@ if exist(outputFile,'file')
     % Recover from interrupted session
     load(outputFile);
     if isinf(trial)           % Crashed at the end of the block, start from next block
+        design.point_array = design.point_array;
         design.types = design.types;
         design.rel_type = design.rel_type;
         trialStart = 1;
         blockStart = iBlock + 1;
     else
+        design.point_array = design.point_array;
         design.types = design.types; 
         design.rel_type = design.rel_type;
         trialStart = trial+1; % Start from the following trial
@@ -133,6 +138,8 @@ else
             design.numtrials(iBlock)    = design.trial_nums(iBlock);
     end
 end
+
+%PsychDefaultSetup(2);
 
 % Screen Setup
 screenNumber = max(Screen('Screens'));
@@ -170,7 +177,7 @@ screen.inst_pause    = 0.2;     % Time between instruct screens
 screen.stimwidthmultiplier = 1.5352;
 
 % Open the screen
-[screen.window, screen.windowRect] = Screen('OpenWindow', screenNumber, screen.bgcolor);
+[screen.window, screen.windowRect] = PsychImaging('OpenWindow', screenNumber, screen.bgcolor);
 
 % Get the size of the on screen window in pixels
 [screen.Xpixels, screen.Ypixels] = Screen('WindowSize', screen.window);
@@ -199,7 +206,8 @@ end
 % Begin
 ring = grid_info( screen, design, control);
 HideCursor;
-showinstructions(0,screen,1,design,params,ring);
+trial = 0;
+showinstructions(0,screen,1,design,params,ring,trial);
 WaitSecs(screen.inst_pause);
 
 if sessionNo == 1
@@ -209,10 +217,12 @@ if sessionNo == 1
     WaitSecs(screen.inst_pause);
     instruct_screen3( screen,ring,design)
     WaitSecs(screen.inst_pause);
-    showinstructions(3,screen,1,design,params,ring);
+    showinstructions(3,screen,1,design,params,ring,trial);
+    WaitSecs(screen.inst_pause);
+    instruct_progress(screen,ring,design );
     WaitSecs(screen.inst_pause);
 else 
-    showinstructions(11,screen,1,design,params,ring);
+    showinstructions(11,screen,1,design,params,ring,trial);
     WaitSecs(screen.inst_pause);
 end
 
@@ -223,7 +233,7 @@ for iBlock = blockStart:numel(design.types)
     
     % Starting Instructions
     block_start = GetSecs;
-    showinstructions(1, screen, iBlock,design,params,ring)
+    showinstructions(1, screen, iBlock,design,params,ring,trial)
     params.instruct = 0;
  
     data.fields{iBlock}         = {'trial','response','ellipse orientation','points','error','cue center','cue ID','resp_time'};
@@ -236,12 +246,12 @@ for iBlock = blockStart:numel(design.types)
     
     % Block Type
     switch design.types(iBlock)
-        case 1 % Train
+        case 1 % Adapt for low roundness
             params.width = design.width(1);
             params.index = 1;
-            data.block_type{iBlock}     = 'A';
+            data.block_type{iBlock}     = 'LA';
             
-        case 2 % Adapt Contrast
+        case 2 % Train
             params.width = design.width(1);
             params.index = 1;
             data.block_type{iBlock}     = 'T';
@@ -270,20 +280,40 @@ for iBlock = blockStart:numel(design.types)
             params.width = design.width(1);
             params.index = 1;
             data.block_type{iBlock}     = 'I';
-
+            
+        case 8 % Adapt for high roundness
+            params.width = design.width(1);
+            params.index = 2;
+            data.block_type{iBlock}     = 'HA';
     end
     
     % Balance Cues
     design.cue_order{iBlock}    = counterbalance(design,iBlock,data);
     
-   if data.block_type{iBlock} == 'I';
-        showinstructions(8,screen,1,design,params,ring);
+   switch data.block_type{iBlock}
+       
+       case {'I'}; %CHNAGE TO SWITCH
         WaitSecs(screen.inst_pause);
-        instruct_useCue( screen,params,design,ring)
+        instruct_ellRound(screen,params,design,ring);
+        WaitSecs(screen.inst_pause);
+        showinstructions(8,screen,1,design,params,ring,trial);
+        WaitSecs(screen.inst_pause);
+        instruct_useCue( screen,params,design,ring,1);
+        WaitSecs(screen.inst_pause);
+        instruct_useCue( screen,params,design,ring,3);
+        WaitSecs(screen.inst_pause);
+        instruct_useCue( screen,params,design,ring,4);
+        WaitSecs(screen.inst_pause);
+        instruct_useCue( screen,params,design,ring,2);
+        
+       case {'HA'};
+       showinstructions(12,screen,iBlock,design,params,ring,trial);
    end
-    
+   
     % Adaptive block, no cues
-    if data.block_type{iBlock} == 'A';
+    switch data.block_type{iBlock}
+        case {'LA', 'HA'}
+    %if data.block_type{iBlock} == 'LA' || data.block_type{iBlock} == 'HA';
         params.stim_type    = design.stim;
         params.cue_type     = 0;
         params.pre_cue      = null_cue;
@@ -296,9 +326,9 @@ for iBlock = blockStart:numel(design.types)
             case 2
                 [data, design, trial] = adapt_ott(screen, params, data, design, ring, trialStart, outputFile);
         end
+        %else
         
-    else
-
+        case {'T' 'I' 'HN' 'HW' 'LW' 'LN'}
     % Trials
     for trial = trialStart:design.numtrials(iBlock)
         trial_start         = GetSecs;
@@ -308,43 +338,46 @@ for iBlock = blockStart:numel(design.types)
         
         if data.block_type{iBlock} == 'I'
             if trial == design.post_start
-                showinstructions(4,screen,iBlock,design,params,ring);
+                showinstructions(4,screen,iBlock,design,params,ring,trial);
             elseif trial == design.pre_start+1
-                showinstructions(5,screen, iBlock,design,params,ring)
+                showinstructions(5,screen, iBlock,design,params,ring,trial)
             elseif trial == design.pre_end+1
-                showinstructions(6,screen, iBlock,design,params,ring)
+                showinstructions(6,screen, iBlock,design,params,ring,trial)
             end
         end
         
-             % Cue appearances
-             if design.cue_order{iBlock}(trial) == 2 % pre+post
-                params.pre_cue  = target_cue;
-                params.post_cue = target_cue;
-
-             elseif design.cue_order{iBlock}(trial) == 1 % post
+        % Ellipse roundness and Cue appearances
+        if design.cue_order{iBlock}(trial) < 4
+            params.relType = design.high_rel;
+        else
+            params.relType = design.low_rel;
+        end
+        
+        switch mod(design.cue_order{iBlock}(trial),4)
+            case 0 % Null
+                params.pre_cue  = null_cue;
+                params.post_cue = null_cue;                
+            case 1 % Post
                 params.pre_cue  = null_cue; 
                 params.post_cue = target_cue;
-                
-             elseif design.cue_order{iBlock}(trial) == 0 % none
-                params.pre_cue  = null_cue;
-                params.post_cue = null_cue;
-                
-             elseif design.cue_order{iBlock}(trial) == 3 % pre
+            case 2 % Pre + Post
+                params.pre_cue  = target_cue;
+                params.post_cue = target_cue;
+            case 3 % Pre
                 params.pre_cue  = target_cue;
                 params.post_cue = null_cue;
-                 
-             end
+        end
 
         % Determine what to save
         switch params.stim_type
             case 'ellipse'
-                type_save = design.roundness(params.index);
+                type_save = design.roundness(params.relType);
             case 'gabor'
-                type_save = design.contrast(params.index);
+                type_save = design.contrast(params.relType);
         end
         
         % Pass info to runtrial
-        [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial(screen,design,params, ring, iBlock,data);
+        [point_totes,mouse_start,responseAngle,resp_error,arc_mean,resp_time ] = runtrial(screen,design,params, ring, iBlock,data, trial);
         
         trial_end = GetSecs;
         trial_dur = trial_end-trial_start;
@@ -374,8 +407,9 @@ for iBlock = blockStart:numel(design.types)
     
     % If end of train block, set cue widths
     if data.block_type{iBlock} == 'T';
-        design.width(1) = design.med2sd*median(abs(data.mat{2}([start_width:end],5)));
+        design.width(1) = design.med2sd*median(abs(data.mat{2}(start_width:end,5)));
         design.width(2) = design.wide_ratio*design.width(1);
+        design.target_SDerror(2) = design.width(2);
     end
     
     % Save data at the end of the block
@@ -384,17 +418,31 @@ for iBlock = blockStart:numel(design.types)
     % Show block feedback
     total       = sum(data.mat{iBlock}(:,4),1);                         % Total score
     completion  = sum(design.numtrials(1:iBlock))/sum(design.numtrials);% Completed
-    displayscore(total,completion,screen,ring);
+    switch sessionNo
+        case 1
+            if iBlock == 5
+                [avg_points, design] = get_blockAverage(design, data, sessionNo, iBlock, total);
+            elseif iBlock == 6
+                [avg_points, design] = get_blockAverage(design, data, sessionNo, iBlock, total);
+            else
+                avg_points = [];
+            end
+        case {2, 3}
+            [avg_points, design] = get_blockAverage(design, data, sessionNo, iBlock, total);
+    end
+    displayscore(total,completion,screen,data,avg_points);
     trialStart  = 1;    
     trial       = Inf;    % Reached end of the block
     
-    if data.block_type{iBlock} == 'T';
-        showinstructions(7,screen,1,design,params,ring);
+    switch data.block_type{iBlock}
+        case {'HA'};
+        showinstructions(7,screen,1,design,params,ring,trial);
+        case {'I'};
+        showinstructions(10,screen,1,design,params,ring,trial);
     end
     
-    if data.block_type{iBlock} == 'I';
-        showinstructions(10,screen,1,design,params,ring);
-    end
+    % Save data at the end of the block
+    save(outputFile, 'data', 'design','trial','iBlock'); 
     
 end 
 
@@ -403,7 +451,7 @@ end
     Screen('TextSize', screen.window, screen.text_size);
     DrawFormattedText(screen.window, text, 'center', screen.Ypixels * 0.4, screen.white);
     Screen('Flip', screen.window);
-
+    
     % Enable only SPACE to continue
     RestrictKeysForKbCheck(32);
     KbWait([],2);
@@ -411,7 +459,16 @@ end
 
     %Return Cursor
     ShowCursor;
-
+    
+    % Check MAD, for screening
+    if sessionNo == 1
+        [mad_low, mad_high] = getMAD(data);
+        fprintf(num2str(mad_low));
+        fprintf('\n');
+        fprintf(num2str(mad_high));
+    end
+   
     % Clear screen
     sca;
+    Screen('CloseAll');
 end

@@ -1,4 +1,4 @@
-function showinstructions(type,screen, iBlock,design,params,ring)
+function showinstructions(type,screen, iBlock,design,params,ring,trial)
 % Show instructions on screen, wait for keypress to continue
 
 params.cue_instruct = 1;
@@ -26,7 +26,7 @@ switch type
         % Diff file
         
     case 3
-        text = 'The experiment is comprised of seven blocks.';
+        text = 'The experiment is composed of seven blocks, about 150 trials each.'; %check for text length
         text = [text '\n\n\n\nYour total score for the block will appear at the end of that block.'];
         text = [text '\n\n\n\nThe percent completed of the whole experiment will show as well.'];
         text = [text '\n\n\n\nPlease ask the experimenter if you have questions.'];
@@ -41,6 +41,7 @@ switch type
         ypos = .25;
         text_size = 30;
         V_spacing = 1;
+        progress_bar( screen, design,trial,iBlock )
         
     case 5 
         text = 'In the following practice trials, the cue will appear briefly before the ellipse.';
@@ -49,6 +50,7 @@ switch type
         ypos = .25;
         text_size = 30;
         V_spacing = 1;
+        progress_bar( screen, design,trial,iBlock )
         
     case 6
         text = 'In the following practice trials, the same cue will appear both '; 
@@ -58,9 +60,10 @@ switch type
         ypos = .25;
         text_size = 30;        
         V_spacing = 1.5;
+        progress_bar( screen, design,trial,iBlock )
         
     case 7
-        text = 'Congratulations, you completed the first two blocks!';
+        text = 'Congratulations, you completed the first three blocks!';
         text = [text '\n\n\n\nPlease call the experimenter to explain the rest of the experiment.'];
         ypos = .25;
         text_size = screen.text_size;
@@ -80,7 +83,7 @@ switch type
         text_size = 30;
         V_spacing = 1.5;
         
-    case 9
+    case 9 %UNUSED
         text = 'The cue hints at the likely orientation of the ellipse in the trial.';
         text = [text '\nThe thicker parts at the center of the arc suggest which way the ellipse was most likely oriented.'];
         text = [text '\nAs the arc gets thinner, the corresponding orientations become less likely.\n\n\n\n'];
@@ -111,10 +114,20 @@ switch type
         V_spacing = 1.5;
         
     case 11
-        text = 'Remember!';
-        text = [text '\n\nPay attention to the cue!'];
+        text = 'Welcome back!';
+        text = [text '\n\nThe task remains the same as in the previous session.'];
+        text = [text '\n\n\n\n\n\nRemember to pay attention to the cue!'];
         text = [text '\n\nThe cue will help you estimate the ellipse orientation, improving your score.'];
+        text = [text '\n\n\n\n\n\n\nPlease ask now if you have any questions'];
         ypos = .15;
+        text_size = 30;
+        V_spacing = 1;
+        
+    case 12
+        text = 'You will now be presented with rounder ellipses.';
+        text = [text '\n\nThe task remains the same, but may seem a bit harder.'];
+        text = [text '\n\nDo your best!'];
+        ypos = .3;
         text_size = 30;
         V_spacing = 1;
         
@@ -143,7 +156,7 @@ if ~isempty(text)
     RestrictKeysForKbCheck(32);
     
     if type == 7
-        WaitSecs(10);
+        WaitSecs(1);
     end
 
     % Wait for key press to move on

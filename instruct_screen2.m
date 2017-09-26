@@ -3,7 +3,7 @@ function instruct_screen2( screen,ring,design )
 text1 = 'After the ellipse disappears, you will be asked to estimate ';
 text1 = [text1 '\nthe orientation of its longer axis.'];
 text =  '\n\n\n\nMove the mouse left and right to move the white bar.';%match not move, at end: to the desired orientation.'];
-text = [text '\n\n\n\n\n\n\n\n\n\n\n\n\nClick the left mouse button to lock in.'];
+text = [text '\n\n\n\n\n\n\n\n\n\n\n\n\nClick the left mouse button to respond.'];
 text = [text '\n\nA grid of dots will be present to serve as reference points.'];
 text_size = 30;
 ypos = 0.15;

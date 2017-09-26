@@ -5,6 +5,6 @@ function design = set_roundness(design, data,params)
         fit_1 = robustfit(x,y,'ols'); 
         a = fit_1(2); 
         b = fit_1(1); 
-        design.roundness(1) = (design.target_SDerror/design.mean_mult-b)/a;
+        design.roundness(1) = (design.target_SDerror(params.index)/design.mean_mult-b)/a;
 
 end

@@ -1,4 +1,4 @@
-function drawellipse( screen, stim, params,ring)
+function drawellipse( screen, stim, params,ring,trial,design,iBlock)
 % Code taken from Will, still unsure how it does what it does, but it draws
 % a bunch of circles on top of each other to make a smooth ellipse.
 
@@ -10,9 +10,9 @@ if params.instruct == 1 || params.instruct == 2
         case 2
             rot = params.add - 90;
     end
-    
-    roundness = 2.5;  
-    
+
+roundness = params.roundness;
+
 else
     stim.ort  = params.trial_mean;
     rot       = stim.ort - 90;
@@ -90,6 +90,7 @@ Screen('DrawTexture', screen.window, texture, [], destRect);
 Screen('Close', texture);
 
 if params.instruct ~= 1 && params.instruct ~=2
+    progress_bar( screen, design,trial,iBlock )
     Screen('FillOval', screen.window, ring.color, ring.allRects);
     Screen('Flip', screen.window);
 end

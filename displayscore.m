@@ -1,8 +1,11 @@
-function displayscore(total,completion,screen,ring)
+function displayscore(total,completion,screen,data, avg_points)
 
 %First Part of Message
 text = ['Score in this block: ' num2str(total)];
-text = [text '\n\n\nExperiment completed: ' num2str(completion*100,'%.1f') '%'];
+if ~isempty(avg_points)
+    text = [text '\n\n\n Average points per block: ' num2str(round(avg_points))];
+end
+text = [text '\n\n\nExperiment completed: ' num2str(round(completion*100)) '%'];
 text = [text '\n\n\n\n Press SPACE to continue'];
 
 % Draw text
