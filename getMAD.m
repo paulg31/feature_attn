@@ -1,5 +1,5 @@
 function [mad_low, mad_high] = getMAD(data)
-blocks = [5 6];
+blocks = [7 8];
 vals_low = [];
 vals_high = [];
 for block_num = 1:numel(blocks)

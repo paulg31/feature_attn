@@ -54,7 +54,7 @@ while 1
         'center', screen.Ypixels * ypos, screen.white);
     
     % Flip to the screen
-    Screen('Flip', screen.window);
+    screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
     
     if KbCheck
         break;
@@ -64,7 +64,7 @@ while 1
 end
 
 % Flip Screen
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Unrestricts Keys
 RestrictKeysForKbCheck([]);

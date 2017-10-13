@@ -37,7 +37,7 @@ while ~exitLoop
     Screen('DrawLines',screen.window,xy,screen.bar_width,screen.lesswhite,[screen.xCenter screen.yCenter],1);
     progress_bar( screen, design,trial,iBlock )
     Screen('FillOval', screen.window, ring.color, ring.allRects);
-    Screen('Flip', screen.window,screen.ifi);
+    screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
     
     % Response, separate fucntions
     if buttons(1) == 1

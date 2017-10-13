@@ -100,7 +100,7 @@ switch instructNo
                 'center', screen.Ypixels * ypos, screen.white);
 
             % Flip to the screen
-            Screen('Flip', screen.window);
+            screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
             if KbCheck
                 break;
@@ -133,7 +133,7 @@ switch instructNo
                 'center', screen.Ypixels * ypos, screen.white);
 
             % Flip to the screen
-            Screen('Flip', screen.window);
+            screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
             if KbCheck
                 break;
@@ -141,7 +141,7 @@ switch instructNo
             WaitSecs(.001);
         end
 end
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Unrestricts Keys
 RestrictKeysForKbCheck([]);

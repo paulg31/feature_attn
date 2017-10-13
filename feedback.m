@@ -1,12 +1,17 @@
 function [ point_totes,resp_error] = feedback( params, responseAngle, screen, ring,design,data, iBlock,trial)
-    
-    if design.cue_order{iBlock}(trial) < 4
-            idx_val = 1;
+    if iBlock == 1 || iBlock == 2
+        idx_val = 1;
+    elseif iBlock == 3
+        idx_val = 2;
     else
-            idx_val = 2;
+        if design.cue_order{iBlock}(trial) < 4
+                idx_val = 1;
+        else
+                idx_val = 2;
+        end
     end
     
-    sigma = design.pointsigma_mult(idx_val)*design.width(idx_val);
+    sigma       = design.pointsigma_mult(idx_val)*design.width(idx_val);
     vals        = [responseAngle-180-params.trial_mean responseAngle-params.trial_mean responseAngle+180-params.trial_mean];
     error       = min(abs(vals));
     expo        = ((error)^2)/(2*sigma^2);
@@ -40,6 +45,6 @@ function [ point_totes,resp_error] = feedback( params, responseAngle, screen, ri
     %Flip to Screen
     progress_bar( screen, design,trial,iBlock )
     Screen('FillOval', screen.window, ring.color, ring.allRects);
-    Screen('Flip', screen.window);
+    screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
     WaitSecs(screen.feedback_time);
 end

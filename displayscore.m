@@ -14,10 +14,10 @@ DrawFormattedText(screen.window,text,...
     'center', screen.Ypixels * 0.4, screen.white);
 
 % Flip to Screen
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Enable only SPACE to continue
 RestrictKeysForKbCheck(32);
 KbWait([],2);
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 RestrictKeysForKbCheck([]);

@@ -43,14 +43,14 @@ DrawFormattedText(screen.window,text,'center', screen.Ypixels * 0.3, screen.whit
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 
 % Flip to the screen
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Enable only SPACE to continue
 RestrictKeysForKbCheck(32);
 
 % Wait for key press to move on
 KbWait([],2);
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Unrestricts Keys
 RestrictKeysForKbCheck([]);

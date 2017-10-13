@@ -1,0 +1,17 @@
+Blocking:
+
+1) Set the last two items in design.types equal to each other.
+	- No blocking, all blocks after intro blocks will be the same
+	- trials will follow the design.intro_trials, design.session_trials, and design.other_trials
+2) Set the last two items in design.types NOT equal to eachother.
+	- THis willl block two types of trials
+	- The result will be Intro trials, followed by Low Roundness and High Roundness blocks, in that order
+	- You will also have to set 'block' in the experiment input for sessions 2 and 3.
+	- 1 will start the session will low roundness and alternate, 2 will start the session with high
+3) Set the last two item NOT equal to eachother AND change design.cue ratio to 1/3 (from 1/4)
+	- This will result in the same alternation as in (2)
+	- The same is required in terms of 'blobk' in the inputs
+	- Changing the cue ratio results in the cue blocks including all cue conditions except null.
+	- This option results in 2 null blocks, alternating cue blocks, and then 2 null blocks.
+
+***These will be changed so that all you have to do is select 1,2, or 3***

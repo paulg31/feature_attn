@@ -58,6 +58,10 @@ switch params.stim_type
 %         switch data.block_type{params.iblock}
 %             case {'LA'}
                 design.roundness(params.index) = computeTargetRoundness(rel_vec,error_vec,targetSDerror);
+                if params.index == 2
+                    % Ensure that high roundness is actually larger by some amount
+                    design.roundness(2) = max(design.roundness(2),design.roundness(1)+2);
+                end
 %             case {'HA'}
 %                 design.roundness(params.index) = computeTargetRoundness(rel_vec,error_vec,targetSDerror);
 %         end

@@ -51,7 +51,7 @@ while 1
         Screen('FillOval', screen.window, ring.color, ring.allRects);
 
         % Flip to the screen
-        Screen('Flip', screen.window);
+        screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
         t_start = tic();
         time_step = 0;
         
@@ -73,7 +73,7 @@ while 1
         Screen('FillOval', screen.window, ring.color, ring.allRects);
 
         % Flip to the screen
-        Screen('Flip', screen.window);
+        screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
         time_step = 1;
     end
     
@@ -84,7 +84,7 @@ while 1
     WaitSecs(0.001);
 end
 
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Unrestricts Keys
 RestrictKeysForKbCheck([]);

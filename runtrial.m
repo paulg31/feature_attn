@@ -15,7 +15,7 @@ progress_bar( screen, design,trial,iBlock )
 Screen('FillOval', screen.window, ring.color, ring.allRects);
 
 % Flip to the screen
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
 % Wait
 fixDuration = screen.fixationdur*(1+screen.jitter*(2*rand()-1));
@@ -34,13 +34,13 @@ Screen(arc.type2draw.pre, screen.window, screen.bgcolor, arc.coveropp.pre);
 % Cross and flip
 progress_bar( screen, design,trial,iBlock )
 Screen('FillOval', screen.window, ring.color, ring.allRects);
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 WaitSecs(screen.cue_duration); %300 ms
 
 % Wait Screen
 progress_bar( screen, design,trial,iBlock )
 Screen('FillOval', screen.window, ring.color, ring.allRects);
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 WaitSecs(screen.stim_pre); %200 ms
 
 switch params.stim_type
@@ -65,7 +65,7 @@ WaitSecs(screen.stim_duration); % 50 ms
 % Wait Screen
 progress_bar( screen, design,trial,iBlock )
 Screen('FillOval', screen.window, ring.color, ring.allRects);
-Screen('Flip', screen.window);
+screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 WaitSecs(screen.stim_post);% 300 ms
 
 % Begin response

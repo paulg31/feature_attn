@@ -26,7 +26,7 @@ switch type
         % Diff file
         
     case 3
-        text = 'The experiment is composed of seven blocks, about 150 trials each.'; %check for text length
+        text = 'The experiment is composed of 6 blocks, about 150 trials each.'; %check for text length
         text = [text '\n\n\n\nYour total score for the block will appear at the end of that block.'];
         text = [text '\n\n\n\nThe percent completed of the whole experiment will show as well.'];
         text = [text '\n\n\n\nPlease ask the experimenter if you have questions.'];
@@ -118,7 +118,7 @@ switch type
         text = [text '\n\nThe task remains the same as in the previous session.'];
         text = [text '\n\n\n\n\n\nRemember to pay attention to the cue!'];
         text = [text '\n\nThe cue will help you estimate the ellipse orientation, improving your score.'];
-        text = [text '\n\n\n\n\n\n\nPlease ask now if you have any questions'];
+        text = [text '\n\n\n\n\n\n\nPlease ask now if you have any questions.'];
         ypos = .15;
         text_size = 30;
         V_spacing = 1;
@@ -130,6 +130,23 @@ switch type
         ypos = .3;
         text_size = 30;
         V_spacing = 1;
+        
+    case 13
+        text = 'In this block, there will be no cues.';
+        text = [text '\n\n\nThis might feel harder, but try to do you your best!'];
+        ypos = .3;
+        text_size = 30;
+        V_spacing = 1;
+        
+    case 14
+        
+        text = 'In this block, cues will suggest the likely orientation of the ellipse.';
+        text = [text '\n\n\nRemember to pay attention to the cue!'];
+        text = [text '\n\n\nThe cue will help you estimate the ellipse orientation, improving your score.'];
+        ypos = .3;
+        text_size = 30;
+        V_spacing = 1;
+        
         
     otherwise
         text = [];
@@ -150,7 +167,7 @@ if ~isempty(text)
         'center', screen.Ypixels * ypos, screen.white,[],[],[],V_spacing);
     
     % Flip to the screen
-    Screen('Flip', screen.window);
+    screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
     % Enable only SPACE to continue
     RestrictKeysForKbCheck(32);
@@ -162,7 +179,7 @@ if ~isempty(text)
     % Wait for key press to move on
     KbWait([],2);
     
-    Screen('Flip', screen.window);
+    screen.vbl = Screen('Flip', screen.window, screen.vbl + (screen.waitfr - screen.frame_diff) * screen.ifi);
 
     % Unrestricts Keys
     RestrictKeysForKbCheck([]);
